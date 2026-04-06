@@ -1,1548 +1,1115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Trading System</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    :root{
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
-      color-scheme: light dark;
-    }
-    *{ box-sizing:border-box; }
-    body{
-      margin:0;
-      min-height:100vh;
-      background:#0f172a;
-      color:#e5e7eb;
-      display:flex;
-      justify-content:center;
-      padding:24px;
-    }
-    .app{
-      max-width:1150px;
-      width:100%;
-      background:rgba(15,23,42,0.95);
-      border-radius:18px;
-      padding:20px 22px 24px;
-      box-shadow: 0 18px 45px rgba(0,0,0,0.55), 0 0 0 1px rgba(148,163,184,0.2);
-      display:flex;
-      flex-direction:column;
-      gap:14px;
-    }
-    header{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      padding-bottom:10px;
-      border-bottom:1px solid rgba(148,163,184,0.35);
-      gap:14px;
-    }
-    .title{
-      font-size:1.2rem;
-      letter-spacing:0.06em;
-      text-transform:uppercase;
-      font-weight:650;
-    }
-    .subtitle{
-      font-size:0.8rem;
-      color:#9ca3af;
-    }
-    .topbar{
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-      align-items:flex-end;
-    }
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(55,65,81,0.9);
-      background:#020617;
-      font-size:0.78rem;
-      color:#cbd5f5;
-      white-space:nowrap;
-    }
-    main.layout{
-      display:flex;
-      flex-direction:column;
-      gap:14px;
-    }
-    @media (min-width: 900px){
-      main.layout{ flex-direction:row; align-items:flex-start; }
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Ritual — Pre-Trade Checklist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0b0a08;
+    --ink-2: #13110d;
+    --ink-3: #1a1712;
+    --bone: #f2ead9;
+    --bone-dim: #c9bfa8;
+    --bone-faint: #6b6552;
+    --gold: #c9a24a;
+    --gold-bright: #e8c072;
+    --blood: #8b2e2e;
+    --serpent: #4a6b3a;
+    --up: #5a8c4a;
+    --down: #a23838;
+    --flat: #6b6552;
+    --edge: rgba(201, 162, 74, 0.22);
+    --edge-soft: rgba(201, 162, 74, 0.1);
+  }
 
-    .panel{
-      background: rgba(15, 23, 42, 0.7);
-      border-radius: 14px;
-      padding: 14px 14px 14px;
-      border: 1px solid rgba(51, 65, 85, 0.9);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      min-width:0;
-    }
-    .panel-left{ flex: 1; }
-    .panel-right{ flex: 1.1; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    .panel h2{
-      font-size:0.85rem;
-      text-transform:uppercase;
-      letter-spacing:0.08em;
-      color:#9ca3af;
-      margin:0;
-    }
-    label{
-      font-size:0.85rem;
-      color:#cbd5f5;
-    }
-    textarea, input[type="text"], select{
-      width:100%;
-      padding:10px 11px;
-      border-radius:10px;
-      border: 1px solid rgba(51,65,85,0.9);
-      background:#020617;
-      color:#e5e7eb;
-      font-family:inherit;
-      font-size:0.9rem;
-      line-height:1.35;
-      outline:none;
-    }
-    textarea{ resize:vertical; min-height:84px; }
-    textarea:focus, input[type="text"]:focus, select:focus{
-      border-color:#6366f1;
-      box-shadow:0 0 0 1px rgba(99,102,241,0.6);
-    }
+  html, body {
+    background: var(--ink);
+    color: var(--bone);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    line-height: 1.5;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
 
-    .row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
-    .row > *{ flex:1; min-width:140px; }
-    .row .tight{ flex:0 0 auto; min-width:auto; }
+  body {
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(201, 162, 74, 0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, rgba(139, 46, 46, 0.05) 0%, transparent 50%),
+      var(--ink);
+    position: relative;
+    overflow-x: hidden;
+  }
 
-    button{
-      border:none;
-      border-radius:999px;
-      padding:8px 16px;
-      font-size:0.9rem;
-      font-weight:550;
-      background: linear-gradient(135deg, #6366f1, #7c3aed);
-      color:white;
-      cursor:pointer;
-      transition: transform 0.06s ease, box-shadow 0.06s ease, opacity 0.08s;
-      box-shadow: 0 8px 18px rgba(79, 70, 229, 0.5);
-      white-space:nowrap;
-    }
-    button:hover{ transform: translateY(-1px); box-shadow: 0 12px 28px rgba(79,70,229,0.7); }
-    button:active{ transform: translateY(0); box-shadow: 0 5px 14px rgba(79,70,229,0.6); opacity:0.95; }
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.12;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  }
 
-    .btn-ghost{
-      background:transparent;
-      border:1px solid rgba(99,102,241,0.55);
-      box-shadow:none;
-      color:#c7d2fe;
-      padding:7px 14px;
-    }
-    .btn-ghost:hover{
-      transform:none;
-      box-shadow:0 0 0 1px rgba(99,102,241,0.35);
-    }
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 40px 120px;
+    position: relative;
+  }
 
-    .hint{
-      font-size:0.75rem;
-      color:#9ca3af;
-    }
-    .kbd{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size:0.75rem;
-      background: rgba(15,23,42,0.9);
-      padding:2px 7px;
-      border-radius:4px;
-      border:1px solid rgba(75,85,99,0.9);
-    }
+  /* HEADER */
+  header {
+    border-bottom: 1px solid var(--edge);
+    padding-bottom: 40px;
+    margin-bottom: 60px;
+    position: relative;
+  }
 
-    .divider{
-      height:1px;
-      background: rgba(51,65,85,0.8);
-      border:none;
-      margin:6px 0;
-    }
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
 
-    /* Sentiment blocks */
-    .qblock{
-      border:1px solid rgba(31,41,55,0.85);
-      background: rgba(2,6,23,0.6);
-      border-radius:12px;
-      padding:10px 10px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-    .qtop{
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      align-items:center;
-    }
-    .qtitle{
-      font-size:0.82rem;
-      color:#e5e7eb;
-      letter-spacing:0.02em;
-    }
-    .thumbs{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-    }
-    .thumb{
-      width:74px;
-      height:54px;
-      border-radius:10px;
-      border:1px solid rgba(55,65,81,0.9);
-      background:#020617;
-      overflow:hidden;
-      cursor:pointer;
-      position:relative;
-    }
-    .thumb img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-    }
-    .thumb .x{
-      position:absolute;
-      top:4px;
-      right:4px;
-      width:18px;
-      height:18px;
-      border-radius:999px;
-      background:rgba(15,23,42,0.9);
-      border:1px solid rgba(148,163,184,0.35);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:12px;
-      color:#e5e7eb;
-      line-height:1;
-      cursor:pointer;
-      user-select:none;
-    }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
 
-    /* Right panel */
-    .search-row{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-    .notes-list{
-      margin-top:8px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      max-height:560px;
-      overflow-y:auto;
-      padding-right:2px;
-    }
-    details.month-block{
-      border-radius:10px;
-      border:1px solid rgba(31,41,55,0.9);
-      background: rgba(15,23,42,0.9);
-      padding:4px 8px 6px;
-    }
-    details.month-block + details.month-block{ margin-top:6px; }
-    summary.month-summary{
-      cursor:pointer;
-      list-style:none;
-      display:flex;
-      justify-content:space-between;
-      align-items:baseline;
-      font-size:0.85rem;
-      text-transform:uppercase;
-      letter-spacing:0.06em;
-      color:#9ca3af;
-    }
-    summary.month-summary::-webkit-details-marker{ display:none; }
-    .month-summary-title::before{
-      content:"▸";
-      display:inline-block;
-      margin-right:6px;
-      transition: transform 0.12s ease;
-      font-size:0.7rem;
-    }
-    details[open] > summary .month-summary-title::before{ transform: rotate(90deg); }
-    .month-summary-count{ font-size:0.75rem; color:#6b7280; }
+  .brand-mark {
+    width: 48px;
+    height: 48px;
+    color: var(--gold);
+    animation: coil 8s ease-in-out infinite;
+  }
 
-    .month-inner{
-      margin-top:4px;
-      padding-left:4px;
-      border-left: 1px solid rgba(31,41,55,0.7);
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-    }
+  @keyframes coil {
+    0%, 100% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg); }
+  }
 
-    details.day-block{
-      border-radius:6px;
-      padding:2px 4px 4px;
-      background:transparent;
-    }
-    summary.day-summary{
-      cursor:pointer;
-      list-style:none;
-      display:flex;
-      justify-content:space-between;
-      align-items:baseline;
-      font-size:0.8rem;
-      color:#d1d5db;
-    }
-    summary.day-summary::-webkit-details-marker{ display:none; }
-    .day-summary-title::before{
-      content:"▸";
-      display:inline-block;
-      margin-right:6px;
-      transition: transform 0.12s ease;
-      font-size:0.7rem;
-    }
-    details.day-block[open] > summary .day-summary-title::before{ transform: rotate(90deg); }
-    .day-summary-count{ font-size:0.75rem; color:#9ca3af; }
+  .brand-text h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    font-size: 2.4rem;
+    letter-spacing: 0.02em;
+    color: var(--bone);
+    line-height: 1;
+  }
 
-    .day-inner{
-      margin-top:2px;
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
+  .brand-text .subtitle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-top: 6px;
+  }
 
-    .note{
-      padding:8px 9px;
-      border-radius:12px;
-      background: rgba(15,23,42,0.9);
-      border:1px solid rgba(55,65,81,0.9);
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-    .note-header-row{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:8px;
-    }
-    .note-meta{
-      font-size:0.75rem;
-      color:#9ca3af;
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
-    .tag-pill{
-      font-size:0.68rem;
-      padding:2px 8px;
-      border-radius:999px;
-      background: rgba(30,64,175,0.85);
-      border: 1px solid rgba(96,165,250,0.7);
-      color:#e5e7eb;
-      white-space:nowrap;
-      text-transform:uppercase;
-      letter-spacing:0.05em;
-    }
-    .note-text{
-      margin:0;
-      font-size:0.9rem;
-      white-space:pre-wrap;
-      word-wrap:break-word;
-      line-height:1.4;
-    }
-    .note-actions{
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-      margin-top:2px;
-    }
-    .smallbtn{
-      font-size:0.82rem;
-      padding:6px 12px;
-      border-radius:999px;
-      border:1px solid rgba(55,65,81,0.9);
-      background:#020617;
-      color:#e5e7eb;
-      cursor:pointer;
-    }
-    .smallbtn:hover{ border-color: rgba(99,102,241,0.75); }
-    .empty{
-      font-size:0.8rem;
-      color:#6b7280;
-      padding:12px 4px;
-    }
+  .date-override {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
 
-    /* Lightbox */
-    .lightbox{
-      position:fixed;
-      inset:0;
-      background: rgba(0,0,0,0.75);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding:24px;
-      z-index:999;
-    }
-    .lightbox.open{ display:flex; }
-    .lightbox-inner{
-      max-width:min(1100px, 96vw);
-      max-height: min(86vh, 900px);
-      background: rgba(2,6,23,0.95);
-      border:1px solid rgba(148,163,184,0.25);
-      border-radius:16px;
-      overflow:hidden;
-      box-shadow: 0 18px 45px rgba(0,0,0,0.6);
-      display:flex;
-      flex-direction:column;
-    }
-    .lightbox-bar{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      padding:10px 12px;
-      border-bottom:1px solid rgba(51,65,85,0.7);
-      color:#cbd5f5;
-      font-size:0.85rem;
-    }
-    .lightbox-imgwrap{
-      padding:12px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:#000;
-    }
-    .lightbox-imgwrap img{
-      max-width:100%;
-      max-height:72vh;
-      object-fit:contain;
-      border-radius:10px;
-    }
-  </style>
+  .date-override label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--bone-faint);
+  }
+
+  .date-override input {
+    background: var(--ink-2);
+    border: 1px solid var(--edge);
+    color: var(--bone);
+    padding: 8px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    border-radius: 2px;
+    color-scheme: dark;
+  }
+
+  .date-override button {
+    background: none;
+    border: none;
+    color: var(--bone-faint);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 4px 0;
+  }
+
+  .date-override button:hover { color: var(--gold); }
+
+  /* SECTION HEADINGS */
+  .section-heading {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    margin: 60px 0 30px;
+  }
+
+  .section-heading .numeral {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--gold);
+  }
+
+  .section-heading h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    font-size: 1.8rem;
+    letter-spacing: 0.04em;
+    color: var(--bone);
+  }
+
+  .section-heading .rule {
+    flex: 1;
+    height: 1px;
+    background: var(--edge);
+  }
+
+  /* TODAY GRID — the numerological reading for today */
+  .today-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1px;
+    background: var(--edge-soft);
+    border: 1px solid var(--edge);
+  }
+
+  .stat-cell {
+    background: var(--ink-2);
+    padding: 28px 24px;
+    position: relative;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .stat-cell.featured {
+    background: linear-gradient(135deg, var(--ink-2) 0%, var(--ink-3) 100%);
+  }
+
+  .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--bone-faint);
+  }
+
+  .stat-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3.2rem;
+    line-height: 1;
+    font-weight: 400;
+    color: var(--bone);
+    margin-top: 12px;
+  }
+
+  .stat-value .reduced {
+    color: var(--gold);
+    font-style: italic;
+    font-size: 0.6em;
+    margin-left: 0.15em;
+  }
+
+  .stat-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--bone-faint);
+    margin-top: 8px;
+  }
+
+  /* Featured personal year — snake */
+  .snake-cell {
+    background: linear-gradient(135deg, #1a1712 0%, #0f1510 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .snake-bg {
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 140px;
+    height: 140px;
+    opacity: 0.25;
+    color: var(--gold);
+    pointer-events: none;
+  }
+
+  .snake-cell .stat-value { position: relative; z-index: 1; }
+  .snake-cell .stat-label { position: relative; z-index: 1; }
+
+  /* MARKETS */
+  .markets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .market-card {
+    background: var(--ink-2);
+    border: 1px solid var(--edge);
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .market-card:hover {
+    border-color: var(--gold);
+    background: var(--ink-3);
+  }
+
+  .market-card.selected {
+    border-color: var(--gold);
+    background: var(--ink-3);
+  }
+
+  .market-card.selected::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .market-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+
+  .market-symbol {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: var(--bone);
+    letter-spacing: 0.03em;
+  }
+
+  .market-founded {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--bone-faint);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-align: right;
+  }
+
+  .market-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid var(--edge-soft);
+  }
+
+  .market-stat {
+    text-align: center;
+  }
+
+  .market-stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--bone-faint);
+    margin-bottom: 4px;
+  }
+
+  .market-stat-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    color: var(--bone);
+  }
+
+  .market-stat-value .reduced {
+    color: var(--gold);
+    font-style: italic;
+    font-size: 0.7em;
+  }
+
+  /* TRADE PANEL */
+  .trade-panel {
+    background: var(--ink-2);
+    border: 1px solid var(--edge);
+    padding: 40px;
+    margin-top: 30px;
+    display: none;
+  }
+
+  .trade-panel.active { display: block; }
+
+  .trade-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--edge-soft);
+  }
+
+  .trade-panel-header h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 500;
+    color: var(--bone);
+  }
+
+  .trade-panel-header .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .timeframes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+
+  .tf-block {
+    background: var(--ink);
+    border: 1px solid var(--edge-soft);
+    padding: 24px;
+  }
+
+  .tf-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--bone-faint);
+    margin-bottom: 16px;
+  }
+
+  .tf-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .tf-btn {
+    background: transparent;
+    border: 1px solid var(--edge-soft);
+    color: var(--bone-dim);
+    padding: 12px 16px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-align: left;
+  }
+
+  .tf-btn:hover {
+    border-color: var(--bone-faint);
+    color: var(--bone);
+  }
+
+  .tf-btn.active.up {
+    background: rgba(90, 140, 74, 0.15);
+    border-color: var(--up);
+    color: var(--bone);
+  }
+
+  .tf-btn.active.down {
+    background: rgba(162, 56, 56, 0.15);
+    border-color: var(--down);
+    color: var(--bone);
+  }
+
+  .tf-btn.active.flat {
+    background: rgba(107, 101, 82, 0.2);
+    border-color: var(--flat);
+    color: var(--bone);
+  }
+
+  .tf-btn .arrow {
+    font-size: 1.2rem;
+    width: 20px;
+    display: inline-block;
+  }
+
+  .tf-btn.up .arrow { color: var(--up); }
+  .tf-btn.down .arrow { color: var(--down); }
+  .tf-btn.flat .arrow { color: var(--flat); }
+
+  /* ALIGNMENT READING */
+  .alignment {
+    background: linear-gradient(135deg, var(--ink) 0%, var(--ink-3) 100%);
+    border: 1px solid var(--edge);
+    padding: 28px;
+    margin-bottom: 32px;
+    text-align: center;
+  }
+
+  .alignment-arrows {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 2.4rem;
+    letter-spacing: 0.3em;
+    margin-bottom: 12px;
+    line-height: 1;
+  }
+
+  .alignment-arrows .up { color: var(--up); }
+  .alignment-arrows .down { color: var(--down); }
+  .alignment-arrows .flat { color: var(--flat); }
+
+  .alignment-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.3rem;
+    color: var(--bone);
+  }
+
+  .alignment-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--bone-faint);
+    margin-top: 6px;
+  }
+
+  /* NOTES */
+  .notes-section {
+    margin-top: 20px;
+  }
+
+  .notes-section label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--bone-faint);
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  .notes-section textarea {
+    width: 100%;
+    background: var(--ink);
+    border: 1px solid var(--edge-soft);
+    color: var(--bone);
+    padding: 16px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    min-height: 140px;
+    resize: vertical;
+    border-radius: 0;
+  }
+
+  .notes-section textarea:focus {
+    outline: none;
+    border-color: var(--gold);
+  }
+
+  .notes-section textarea::placeholder {
+    color: var(--bone-faint);
+    font-style: italic;
+  }
+
+  .save-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+  }
+
+  .save-status {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--bone-faint);
+  }
+
+  .save-status.saved { color: var(--up); }
+
+  .reset-btn {
+    background: transparent;
+    border: 1px solid var(--edge);
+    color: var(--bone-faint);
+    padding: 8px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .reset-btn:hover {
+    color: var(--blood);
+    border-color: var(--blood);
+  }
+
+  /* empty state */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.2rem;
+    color: var(--bone-faint);
+  }
+
+  @media (max-width: 700px) {
+    .container { padding: 40px 20px 80px; }
+    .brand-text h1 { font-size: 1.8rem; }
+    .stat-value { font-size: 2.4rem; }
+    .timeframes { grid-template-columns: 1fr; }
+    .trade-panel { padding: 24px; }
+    .header-top { flex-direction: column; align-items: stretch; }
+    .date-override { align-items: flex-start; }
+  }
+</style>
 </head>
 <body>
-  <div class="app">
-    <header>
-      <div>
-        <div class="title">Trading System</div>
-        <div class="subtitle">Local-only · No account · Notes + screenshots by day</div>
-      </div>
-      <div class="topbar">
-        <div class="pill" id="todayPill">Today: —</div>
-        <div class="subtitle">Stored locally (this device + this browser)</div>
-      </div>
-    </header>
 
-    <!-- Trading Rules (top) -->
-    <section class="panel" style="position:relative;">
-      <h2>Trading Rules</h2>
-      <label for="rulesInput">Rules (living document)</label>
-      <textarea id="rulesInput" placeholder="Write your non-negotiables here..."></textarea>
-      <div class="row" style="margin-top:2px;">
-        <button class="tight" id="saveRulesBtn">Save rules</button>
-        <div class="hint" style="align-self:center;">
-          Shortcut: <span class="kbd">Ctrl</span> + <span class="kbd">S</span> / <span class="kbd">⌘</span> + <span class="kbd">S</span>
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-top">
+      <div class="brand">
+        <!-- ouroboros-style snake mark -->
+        <svg class="brand-mark" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M50 15 C 25 15, 15 35, 15 50 C 15 75, 35 85, 55 85 C 75 85, 85 70, 80 55 C 75 42, 60 38, 50 45 C 42 50, 40 60, 48 65 C 54 68, 60 65, 60 58" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="50" cy="18" r="2" fill="currentColor" stroke="none"/>
+          <path d="M46 13 L 50 18 L 54 13" stroke-linecap="round"/>
+          <path d="M20 30 L 22 32 M 18 40 L 20 42 M 20 60 L 22 58 M 25 72 L 27 70 M 40 82 L 42 80 M 60 82 L 62 80 M 74 75 L 76 73 M 78 62 L 80 60" stroke-linecap="round"/>
+        </svg>
+        <div class="brand-text">
+          <h1>The Ritual</h1>
+          <div class="subtitle">Pre-Trade Checklist</div>
         </div>
       </div>
-    </section>
+      <div class="date-override">
+        <label for="date-input">Reading for</label>
+        <input type="date" id="date-input">
+        <button id="reset-date">↺ Today</button>
+      </div>
+    </div>
+  </header>
 
-    <main class="layout">
-      <!-- LEFT -->
-      <section class="panel panel-left">
-        <h2>Trading Sentiment</h2>
-        <div class="hint">One entry per day. Saving again updates today’s sentiment.</div>
-
-        <div id="sentimentQuestions"></div>
-
-        <div class="row" style="margin-top:2px;">
-          <button class="tight" id="saveSentimentBtn">Save today’s sentiment</button>
-          <button class="tight btn-ghost" id="resetSentimentBtn" type="button">Clear inputs</button>
-        </div>
-
-        <hr class="divider" />
-
-        <h2>New Journal Entry</h2>
-        <div class="row">
-          <div>
-            <label for="entryType">Type</label>
-            <select id="entryType">
-              <option value="trade">Trade</option>
-              <option value="review">Review</option>
-              <option value="lesson">Lesson</option>
-              <option value="mistake">Mistake</option>
-              <option value="market">Market Notes</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-          <div>
-            <label for="entryMarket">Market (optional)</label>
-            <input id="entryMarket" type="text" placeholder="US30, ES, BTC..." />
-          </div>
-        </div>
-
-        <label for="entryText">Note</label>
-        <textarea id="entryText" placeholder="Execution notes, why you took it, what you saw, what you’d change..."></textarea>
-
-        <div class="qblock" style="padding:10px;">
-          <div class="qtop">
-            <div class="qtitle">Screenshots</div>
-            <div class="row" style="gap:8px; margin:0;">
-              <button class="tight smallbtn" id="addEntryImgBtn" type="button">Add screenshots</button>
-              <button class="tight smallbtn" id="clearEntryImgsBtn" type="button">Clear</button>
-            </div>
-          </div>
-          <div class="thumbs" id="entryThumbs"></div>
-          <input id="entryImgInput" type="file" accept="image/*" multiple style="display:none;" />
-        </div>
-
-        <div class="row" style="margin-top:2px;">
-          <button class="tight" id="saveEntryBtn">Save entry</button>
-          <div class="hint" style="align-self:center;">
-            Shortcut: <span class="kbd">Ctrl</span> + <span class="kbd">Enter</span> / <span class="kbd">⌘</span> + <span class="kbd">Enter</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- RIGHT -->
-      <section class="panel panel-right">
-        <h2>Journal</h2>
-
-        <div class="search-row">
-          <label for="searchInput">Search</label>
-          <input id="searchInput" type="text" placeholder="Search text, type (trade/review/sentiment), or market (US30)..." />
-        </div>
-
-        <div class="row" style="margin-top:2px;">
-          <button class="tight btn-ghost" id="exportTxtBtn" type="button">Export visible (.txt)</button>
-          <button class="tight btn-ghost" id="wipeAllBtn" type="button">Wipe all data</button>
-        </div>
-        <div class="hint">Export includes text + image filenames (local-only). Images stay on device.</div>
-
-        <div id="notesList" class="notes-list"></div>
-      </section>
-    </main>
+  <!-- TODAY READING -->
+  <div class="section-heading">
+    <span class="numeral">I.</span>
+    <h2>The Reading</h2>
+    <div class="rule"></div>
   </div>
 
-  <!-- Lightbox -->
-  <div class="lightbox" id="lightbox" aria-hidden="true">
-    <div class="lightbox-inner" role="dialog" aria-modal="true">
-      <div class="lightbox-bar">
-        <div id="lightboxTitle">Screenshot</div>
-        <button class="smallbtn" id="lightboxCloseBtn" type="button">Close</button>
+  <div class="today-grid">
+    <div class="stat-cell">
+      <div class="stat-label">Universal Year</div>
+      <div>
+        <div class="stat-value" id="u-year">—</div>
+        <div class="stat-sub" id="u-year-sub">—</div>
       </div>
-      <div class="lightbox-imgwrap">
-        <img id="lightboxImg" alt="Screenshot preview" />
+    </div>
+
+    <div class="stat-cell snake-cell">
+      <svg class="snake-bg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M20 20 Q 40 10, 50 30 T 80 40 Q 90 60, 70 70 T 30 80 Q 10 70, 25 55 T 55 50" stroke-linecap="round"/>
+        <circle cx="20" cy="20" r="1.5" fill="currentColor" stroke="none"/>
+        <path d="M17 17 L 20 20 L 23 17" stroke-linecap="round"/>
+      </svg>
+      <div class="stat-label">Personal Year · Serpent</div>
+      <div>
+        <div class="stat-value" id="p-year">—</div>
+        <div class="stat-sub" id="p-year-sub">birth 9/7</div>
+      </div>
+    </div>
+
+    <div class="stat-cell">
+      <div class="stat-label">Universal Month</div>
+      <div>
+        <div class="stat-value" id="u-month">—</div>
+        <div class="stat-sub" id="u-month-sub">—</div>
+      </div>
+    </div>
+
+    <div class="stat-cell featured">
+      <div class="stat-label">Personal Month</div>
+      <div>
+        <div class="stat-value" id="p-month">—</div>
+        <div class="stat-sub">p.year + u.month</div>
+      </div>
+    </div>
+
+    <div class="stat-cell">
+      <div class="stat-label">Universal Day</div>
+      <div>
+        <div class="stat-value" id="u-day">—</div>
+        <div class="stat-sub" id="u-day-sub">—</div>
+      </div>
+    </div>
+
+    <div class="stat-cell featured">
+      <div class="stat-label">Personal Day</div>
+      <div>
+        <div class="stat-value" id="p-day">—</div>
+        <div class="stat-sub">p.year + u.day</div>
       </div>
     </div>
   </div>
 
-  <script>
-    (function(){
-      // ====== Constants ======
-      const RULES_KEY = "tradingRulesText_v1";
-      const DB_NAME = "trading_system_db_v1";
-      const DB_VERSION = 1;
-      const STORE_ENTRIES = "entries"; // {id, kind, dateKey, createdAt, payload, imageIds, market}
-      const STORE_IMAGES = "images";   // {id, blob, name, createdAt}
-
-      const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-
-      const DEFAULT_SENTIMENT_QUESTIONS = [
-        { key: "trend_4h", label: "What’s the 4H trend?" },
-        { key: "trend_1h", label: "What’s the 1H trend?" },
-        { key: "structure_15m", label: "What’s the 15M structure?" },
-        { key: "levels", label: "Key levels / areas?" },
-        { key: "news", label: "Any news / events today?" },
-        { key: "bias", label: "Bias (long / short / neutral)?" }
-      ];
-
-      // ====== State ======
-      let db = null;
-      let entryPendingFiles = []; // [{id, file, url}]
-      let sentimentState = {};    // key -> {answer, pendingFiles: [{id,file,url}]}
-      let objectUrlsToRevoke = []; // for rendered blobs
-
-      // ====== Utilities ======
-      function pad2(n){ return String(n).padStart(2,"0"); }
-
-      function todayKey(){
-        const d = new Date();
-        return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
-      }
-
-      function monthKeyFromDateKey(dateKey){
-        // YYYY-MM-DD -> YYYY-MM
-        return dateKey ? dateKey.slice(0,7) : "unknown";
-      }
-
-      function getMonthLabelFromKey(key){
-        if(key === "unknown") return "Unknown";
-        const [y,m] = key.split("-");
-        const idx = parseInt(m,10)-1;
-        return `${MONTH_NAMES[idx] || "Unknown"} ${y}`;
-      }
-
-      function getDayLabelFromKey(dateKey){
-        if(dateKey === "unknown") return "Unknown day";
-        const [y,m,d] = dateKey.split("-");
-        const idx = parseInt(m,10)-1;
-        return `${MONTH_NAMES[idx] || "Unknown"} ${parseInt(d,10)}`;
-      }
-
-      function formatTime(iso){
-        const d = new Date(iso);
-        if(isNaN(d.getTime())) return "";
-        return d.toLocaleTimeString(undefined, {hour:"2-digit", minute:"2-digit"});
-      }
-
-      function safeText(v){ return String(v ?? ""); }
-
-      function downloadText(filename, text){
-        const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setTimeout(()=>URL.revokeObjectURL(url), 500);
-      }
-
-      // ====== IndexedDB helpers ======
-      function openDB(){
-        return new Promise((resolve, reject)=>{
-          const req = indexedDB.open(DB_NAME, DB_VERSION);
-          req.onupgradeneeded = (e)=>{
-            const db = req.result;
-            if(!db.objectStoreNames.contains(STORE_ENTRIES)){
-              const s = db.createObjectStore(STORE_ENTRIES, {keyPath:"id"});
-              s.createIndex("by_dateKey", "dateKey", {unique:false});
-              s.createIndex("by_kind_dateKey", ["kind","dateKey"], {unique:false});
-              s.createIndex("by_createdAt", "createdAt", {unique:false});
-            }
-            if(!db.objectStoreNames.contains(STORE_IMAGES)){
-              db.createObjectStore(STORE_IMAGES, {keyPath:"id"});
-            }
-          };
-          req.onsuccess = ()=> resolve(req.result);
-          req.onerror = ()=> reject(req.error);
-        });
-      }
-
-      function tx(storeName, mode="readonly"){
-        const t = db.transaction(storeName, mode);
-        return {store: t.objectStore(storeName), done: new Promise((res, rej)=>{ t.oncomplete=res; t.onerror=()=>rej(t.error); t.onabort=()=>rej(t.error); })};
-      }
-
-      async function putEntry(entry){
-        const {store, done} = tx(STORE_ENTRIES, "readwrite");
-        store.put(entry);
-        await done;
-      }
-
-      async function deleteEntry(id){
-        const {store, done} = tx(STORE_ENTRIES, "readwrite");
-        store.delete(id);
-        await done;
-      }
-
-      async function getAllEntries(){
-        const {store, done} = tx(STORE_ENTRIES, "readonly");
-        const req = store.getAll();
-        const rows = await new Promise((res, rej)=>{ req.onsuccess=()=>res(req.result||[]); req.onerror=()=>rej(req.error); });
-        await done;
-        return rows;
-      }
-
-      async function findSentimentForDate(dateKey){
-        // Scan all entries and find kind=sentiment & dateKey (small scale)
-        const all = await getAllEntries();
-        return all.find(e => e.kind === "sentiment" && e.dateKey === dateKey) || null;
-      }
-
-      async function putImageFromFile(file){
-        const id = Date.now() + Math.random();
-        const rec = { id, blob: file, name: file.name || "image", createdAt: new Date().toISOString() };
-        const {store, done} = tx(STORE_IMAGES, "readwrite");
-        store.put(rec);
-        await done;
-        return { id, name: rec.name };
-      }
-
-      async function getImageRecord(id){
-        const {store, done} = tx(STORE_IMAGES, "readonly");
-        const req = store.get(id);
-        const rec = await new Promise((res, rej)=>{ req.onsuccess=()=>res(req.result||null); req.onerror=()=>rej(req.error); });
-        await done;
-        return rec;
-      }
-
-      async function wipeAll(){
-        // Delete DB by clearing object stores
-        await new Promise((resolve, reject)=>{
-          const t = db.transaction([STORE_ENTRIES, STORE_IMAGES], "readwrite");
-          t.objectStore(STORE_ENTRIES).clear();
-          t.objectStore(STORE_IMAGES).clear();
-          t.oncomplete = resolve;
-          t.onerror = ()=>reject(t.error);
-          t.onabort = ()=>reject(t.error);
-        });
-        localStorage.removeItem(RULES_KEY);
-      }
-
-      // ====== UI: Sentiment ======
-      function initSentimentState(){
-        sentimentState = {};
-        DEFAULT_SENTIMENT_QUESTIONS.forEach(q=>{
-          sentimentState[q.key] = { answer:"", pendingFiles: [] };
-        });
-      }
-
-      function buildSentimentUI(){
-        const host = document.getElementById("sentimentQuestions");
-        host.innerHTML = "";
-
-        DEFAULT_SENTIMENT_QUESTIONS.forEach(q=>{
-          const block = document.createElement("div");
-          block.className = "qblock";
-          block.dataset.qkey = q.key;
-
-          const top = document.createElement("div");
-          top.className = "qtop";
-
-          const title = document.createElement("div");
-          title.className = "qtitle";
-          title.textContent = q.label;
-
-          const actions = document.createElement("div");
-          actions.className = "row";
-          actions.style.gap = "8px";
-          actions.style.margin = "0";
-
-          const addBtn = document.createElement("button");
-          addBtn.type = "button";
-          addBtn.className = "tight smallbtn";
-          addBtn.textContent = "Add screenshots";
-
-          const clearBtn = document.createElement("button");
-          clearBtn.type = "button";
-          clearBtn.className = "tight smallbtn";
-          clearBtn.textContent = "Clear";
-          clearBtn.title = "Clear screenshots for this question";
-
-          const fileInput = document.createElement("input");
-          fileInput.type = "file";
-          fileInput.accept = "image/*";
-          fileInput.multiple = true;
-          fileInput.style.display = "none";
-
-          actions.appendChild(addBtn);
-          actions.appendChild(clearBtn);
-          actions.appendChild(fileInput);
-
-          top.appendChild(title);
-          top.appendChild(actions);
-
-          const answer = document.createElement("input");
-          answer.type = "text";
-          answer.placeholder = "Type your answer...";
-          answer.value = sentimentState[q.key].answer;
-
-          const thumbs = document.createElement("div");
-          thumbs.className = "thumbs";
-
-          addBtn.addEventListener("click", ()=> fileInput.click());
-          fileInput.addEventListener("change", ()=>{
-            const files = Array.from(fileInput.files || []);
-            if(!files.length) return;
-            files.forEach(f=>{
-              const id = Date.now() + Math.random();
-              const url = URL.createObjectURL(f);
-              sentimentState[q.key].pendingFiles.push({id, file:f, url});
-            });
-            fileInput.value = "";
-            renderSentimentThumbs(q.key, thumbs);
-          });
-
-          clearBtn.addEventListener("click", ()=>{
-            // revoke pending preview URLs
-            sentimentState[q.key].pendingFiles.forEach(p=> URL.revokeObjectURL(p.url));
-            sentimentState[q.key].pendingFiles = [];
-            renderSentimentThumbs(q.key, thumbs);
-          });
-
-          answer.addEventListener("input", ()=>{
-            sentimentState[q.key].answer = answer.value;
-          });
-
-          renderSentimentThumbs(q.key, thumbs);
-
-          block.appendChild(top);
-          block.appendChild(answer);
-          block.appendChild(thumbs);
-          host.appendChild(block);
-        });
-      }
-
-      function renderSentimentThumbs(qkey, thumbsEl){
-        thumbsEl.innerHTML = "";
-        const pending = sentimentState[qkey].pendingFiles || [];
-        if(!pending.length) return;
-
-        pending.forEach(p=>{
-          const t = document.createElement("div");
-          t.className = "thumb";
-
-          const img = document.createElement("img");
-          img.src = p.url;
-          img.alt = "Pending screenshot";
-
-          const x = document.createElement("div");
-          x.className = "x";
-          x.textContent = "×";
-          x.title = "Remove";
-
-          x.addEventListener("click", (ev)=>{
-            ev.stopPropagation();
-            URL.revokeObjectURL(p.url);
-            sentimentState[qkey].pendingFiles = sentimentState[qkey].pendingFiles.filter(pp=>pp.id !== p.id);
-            renderSentimentThumbs(qkey, thumbsEl);
-          });
-
-          t.addEventListener("click", ()=>{
-            openLightbox(p.url, "Pending screenshot");
-          });
-
-          t.appendChild(img);
-          t.appendChild(x);
-          thumbsEl.appendChild(t);
-        });
-      }
-
-      async function loadTodaySentimentIntoForm(){
-        const dk = todayKey();
-        const existing = await findSentimentForDate(dk);
-        const btn = document.getElementById("saveSentimentBtn");
-        btn.textContent = existing ? "Update today’s sentiment" : "Save today’s sentiment";
-
-        // reset pending previews (in case)
-        Object.values(sentimentState).forEach(s=>{
-          (s.pendingFiles||[]).forEach(p=> URL.revokeObjectURL(p.url));
-          s.pendingFiles = [];
-        });
-
-        if(!existing){
-          // clear answers
-          DEFAULT_SENTIMENT_QUESTIONS.forEach(q => sentimentState[q.key].answer = "");
-          buildSentimentUI();
-          return;
-        }
-
-        const payload = existing.payload || {};
-        const answers = payload.answers || {};
-        DEFAULT_SENTIMENT_QUESTIONS.forEach(q=>{
-          sentimentState[q.key].answer = safeText(answers[q.key] ?? "");
-        });
-        buildSentimentUI();
-      }
-
-      async function saveOrUpdateTodaySentiment(){
-        const dk = todayKey();
-        const existing = await findSentimentForDate(dk);
-
-        // Persist any pending images into DB, gather ids per question
-        const qImageIds = {}; // qkey -> [imageId,...]
-        for(const q of DEFAULT_SENTIMENT_QUESTIONS){
-          const st = sentimentState[q.key];
-          const pending = st.pendingFiles || [];
-          const ids = [];
-          for(const p of pending){
-            const rec = await putImageFromFile(p.file);
-            ids.push(rec.id);
-          }
-          qImageIds[q.key] = ids;
-        }
-
-        // If updating, keep previous image ids too (append). If you want replace, change this logic.
-        let existingQImageIds = {};
-        if(existing && existing.payload && existing.payload.qImageIds){
-          existingQImageIds = existing.payload.qImageIds;
-        }
-
-        const mergedQImageIds = {};
-        for(const q of DEFAULT_SENTIMENT_QUESTIONS){
-          const prev = Array.isArray(existingQImageIds[q.key]) ? existingQImageIds[q.key] : [];
-          const added = Array.isArray(qImageIds[q.key]) ? qImageIds[q.key] : [];
-          mergedQImageIds[q.key] = prev.concat(added);
-        }
-
-        const answers = {};
-        DEFAULT_SENTIMENT_QUESTIONS.forEach(q=>{
-          answers[q.key] = safeText(sentimentState[q.key].answer).trim();
-        });
-
-        const nowISO = new Date().toISOString();
-        const entry = {
-          id: existing ? existing.id : (Date.now() + Math.random()),
-          kind: "sentiment",
-          dateKey: dk,
-          createdAt: existing ? existing.createdAt : nowISO,
-          updatedAt: nowISO,
-          market: "",
-          imageIds: [], // not used for sentiment (we store per-question)
-          payload: {
-            answers,
-            qImageIds: mergedQImageIds,
-            questions: DEFAULT_SENTIMENT_QUESTIONS
-          }
-        };
-
-        await putEntry(entry);
-
-        // clear pending previews
-        DEFAULT_SENTIMENT_QUESTIONS.forEach(q=>{
-          sentimentState[q.key].pendingFiles.forEach(p=> URL.revokeObjectURL(p.url));
-          sentimentState[q.key].pendingFiles = [];
-        });
-
-        await loadTodaySentimentIntoForm();
-        await renderEntries(document.getElementById("searchInput").value);
-      }
-
-      function clearSentimentInputs(){
-        DEFAULT_SENTIMENT_QUESTIONS.forEach(q=>{
-          sentimentState[q.key].answer = "";
-          sentimentState[q.key].pendingFiles.forEach(p=> URL.revokeObjectURL(p.url));
-          sentimentState[q.key].pendingFiles = [];
-        });
-        buildSentimentUI();
-      }
-
-      // ====== UI: Journal Entry (generic) ======
-      function renderPendingEntryThumbs(){
-        const host = document.getElementById("entryThumbs");
-        host.innerHTML = "";
-        if(!entryPendingFiles.length) return;
-
-        entryPendingFiles.forEach(p=>{
-          const t = document.createElement("div");
-          t.className = "thumb";
-
-          const img = document.createElement("img");
-          img.src = p.url;
-          img.alt = "Pending screenshot";
-
-          const x = document.createElement("div");
-          x.className = "x";
-          x.textContent = "×";
-          x.title = "Remove";
-
-          x.addEventListener("click", (ev)=>{
-            ev.stopPropagation();
-            URL.revokeObjectURL(p.url);
-            entryPendingFiles = entryPendingFiles.filter(pp => pp.id !== p.id);
-            renderPendingEntryThumbs();
-          });
-
-          t.addEventListener("click", ()=>{
-            openLightbox(p.url, "Pending screenshot");
-          });
-
-          t.appendChild(img);
-          t.appendChild(x);
-          host.appendChild(t);
-        });
-      }
-
-      async function saveJournalEntry(){
-        const type = document.getElementById("entryType").value || "other";
-        const market = safeText(document.getElementById("entryMarket").value).trim();
-        const text = safeText(document.getElementById("entryText").value).trim();
-        if(!text && entryPendingFiles.length === 0){
-          alert("Add a note or at least one screenshot.");
-          return;
-        }
-
-        const imageIds = [];
-        for(const p of entryPendingFiles){
-          const rec = await putImageFromFile(p.file);
-          imageIds.push(rec.id);
-        }
-
-        const entry = {
-          id: Date.now() + Math.random(),
-          kind: type,
-          dateKey: todayKey(),
-          createdAt: new Date().toISOString(),
-          updatedAt: null,
-          market,
-          imageIds,
-          payload: { text }
-        };
-
-        await putEntry(entry);
-
-        // clear inputs + pending previews
-        document.getElementById("entryText").value = "";
-        document.getElementById("entryMarket").value = "";
-        entryPendingFiles.forEach(p=> URL.revokeObjectURL(p.url));
-        entryPendingFiles = [];
-        renderPendingEntryThumbs();
-
-        await renderEntries(document.getElementById("searchInput").value);
-      }
-
-      // ====== Rendering entries ======
-      function revokeRenderedObjectUrls(){
-        objectUrlsToRevoke.forEach(u=>{
-          try{ URL.revokeObjectURL(u); } catch(e){}
-        });
-        objectUrlsToRevoke = [];
-      }
-
-      function entryMatchesQuery(entry, query){
-        if(!query) return true;
-        const q = query.toLowerCase().trim();
-        const kind = safeText(entry.kind).toLowerCase();
-        const market = safeText(entry.market).toLowerCase();
-
-        let text = "";
-        if(entry.kind === "sentiment"){
-          const answers = (entry.payload && entry.payload.answers) ? entry.payload.answers : {};
-          text = Object.values(answers).join(" ");
-        } else {
-          text = safeText(entry.payload && entry.payload.text);
-        }
-        text = text.toLowerCase();
-
-        return kind.includes(q) || market.includes(q) || text.includes(q);
-      }
-
-      async function renderEntries(filterValue=""){
-        const listEl = document.getElementById("notesList");
-        const query = (filterValue || "").toLowerCase().trim();
-
-        revokeRenderedObjectUrls();
-
-        const all = await getAllEntries();
-        // Sort newest first by createdAt (sentiment should still be grouped by day)
-        all.sort((a,b)=>{
-          const ta = new Date(a.createdAt).getTime();
-          const tb = new Date(b.createdAt).getTime();
-          return tb - ta;
-        });
-
-        const filtered = query ? all.filter(e=> entryMatchesQuery(e, query)) : all;
-
-        listEl.innerHTML = "";
-        if(!filtered.length){
-          const empty = document.createElement("p");
-          empty.className = "empty";
-          empty.textContent = query ? "No entries match your search." : "No entries yet. Start with today’s sentiment or add a journal entry.";
-          listEl.appendChild(empty);
-          return;
-        }
-
-        // Structure: monthKey -> dateKey -> [entries]
-        const structure = {};
-        for(const e of filtered){
-          const mKey = monthKeyFromDateKey(e.dateKey);
-          const dKey = e.dateKey || "unknown";
-          if(!structure[mKey]) structure[mKey] = {};
-          if(!structure[mKey][dKey]) structure[mKey][dKey] = [];
-          structure[mKey][dKey].push(e);
-        }
-
-        const monthKeys = Object.keys(structure).sort((a,b)=> b.localeCompare(a));
-        for(const mKey of monthKeys){
-          const monthDays = structure[mKey];
-
-          const monthDetails = document.createElement("details");
-          monthDetails.className = "month-block";
-          monthDetails.open = true;
-
-          const monthSummary = document.createElement("summary");
-          monthSummary.className = "month-summary";
-
-          const titleSpan = document.createElement("span");
-          titleSpan.className = "month-summary-title";
-          titleSpan.textContent = getMonthLabelFromKey(mKey);
-
-          const countSpan = document.createElement("span");
-          countSpan.className = "month-summary-count";
-          const monthCount = Object.values(monthDays).reduce((acc,arr)=>acc+arr.length, 0);
-          countSpan.textContent = `${monthCount} item${monthCount!==1?"s":""}`;
-
-          monthSummary.appendChild(titleSpan);
-          monthSummary.appendChild(countSpan);
-          monthDetails.appendChild(monthSummary);
-
-          const monthInner = document.createElement("div");
-          monthInner.className = "month-inner";
-
-          const dayKeys = Object.keys(monthDays).sort((a,b)=> b.localeCompare(a));
-          for(const dKey of dayKeys){
-            const dayEntries = monthDays[dKey];
-
-            // Sort within day: sentiment first (if exists), then newest-first
-            dayEntries.sort((a,b)=>{
-              if(a.kind === "sentiment" && b.kind !== "sentiment") return -1;
-              if(b.kind === "sentiment" && a.kind !== "sentiment") return 1;
-              return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-            });
-
-            const dayDetails = document.createElement("details");
-            dayDetails.className = "day-block";
-            dayDetails.open = true;
-
-            const daySummary = document.createElement("summary");
-            daySummary.className = "day-summary";
-
-            const dayTitle = document.createElement("span");
-            dayTitle.className = "day-summary-title";
-            dayTitle.textContent = getDayLabelFromKey(dKey);
-
-            const dayCount = document.createElement("span");
-            dayCount.className = "day-summary-count";
-            dayCount.textContent = `${dayEntries.length} item${dayEntries.length!==1?"s":""}`;
-
-            daySummary.appendChild(dayTitle);
-            daySummary.appendChild(dayCount);
-            dayDetails.appendChild(daySummary);
-
-            const dayInner = document.createElement("div");
-            dayInner.className = "day-inner";
-
-            for(const e of dayEntries){
-              const card = document.createElement("article");
-              card.className = "note";
-
-              const header = document.createElement("div");
-              header.className = "note-header-row";
-
-              const meta = document.createElement("div");
-              meta.className = "note-meta";
-
-              const time = document.createElement("span");
-              time.textContent = formatTime(e.createdAt);
-
-              const market = safeText(e.market).trim();
-              const marketSpan = document.createElement("span");
-              marketSpan.textContent = market ? `• ${market}` : "";
-
-              meta.appendChild(time);
-              if(market) meta.appendChild(marketSpan);
-
-              const pill = document.createElement("span");
-              pill.className = "tag-pill";
-              pill.textContent = safeText(e.kind).toUpperCase();
-
-              header.appendChild(meta);
-              header.appendChild(pill);
-
-              card.appendChild(header);
-
-              if(e.kind === "sentiment"){
-                const p = document.createElement("p");
-                p.className = "note-text";
-                p.textContent = formatSentimentText(e.payload);
-                card.appendChild(p);
-
-                const gallery = await buildSentimentGallery(e.payload);
-                if(gallery) card.appendChild(gallery);
-
-                const actions = document.createElement("div");
-                actions.className = "note-actions";
-
-                const editBtn = document.createElement("button");
-                editBtn.type = "button";
-                editBtn.className = "smallbtn";
-                editBtn.textContent = (e.dateKey === todayKey()) ? "Edit today’s sentiment" : "View sentiment";
-
-                editBtn.addEventListener("click", async ()=>{
-                  if(e.dateKey !== todayKey()){
-                    alert("This sentiment is from a past day. Editing past sentiment isn’t enabled yet.");
-                    return;
-                  }
-                  await loadTodaySentimentIntoForm();
-                  window.scrollTo({top:0, behavior:"smooth"});
-                });
-
-                const delBtn = document.createElement("button");
-                delBtn.type = "button";
-                delBtn.className = "smallbtn";
-                delBtn.textContent = "Delete";
-
-                delBtn.addEventListener("click", async ()=>{
-                  if(!confirm("Delete this sentiment entry?")) return;
-                  await deleteEntry(e.id);
-                  await renderEntries(document.getElementById("searchInput").value);
-                  await loadTodaySentimentIntoForm();
-                });
-
-                actions.appendChild(editBtn);
-                actions.appendChild(delBtn);
-                card.appendChild(actions);
-              } else {
-                const p = document.createElement("p");
-                p.className = "note-text";
-                p.textContent = safeText(e.payload && e.payload.text);
-                card.appendChild(p);
-
-                const gallery = await buildImageGallery(e.imageIds || [], "Screenshots");
-                if(gallery) card.appendChild(gallery);
-
-                const actions = document.createElement("div");
-                actions.className = "note-actions";
-
-                const delBtn = document.createElement("button");
-                delBtn.type = "button";
-                delBtn.className = "smallbtn";
-                delBtn.textContent = "Delete";
-
-                delBtn.addEventListener("click", async ()=>{
-                  if(!confirm("Delete this entry?")) return;
-                  await deleteEntry(e.id);
-                  await renderEntries(document.getElementById("searchInput").value);
-                });
-
-                actions.appendChild(delBtn);
-                card.appendChild(actions);
-              }
-
-              dayInner.appendChild(card);
-            }
-
-            dayDetails.appendChild(dayInner);
-            monthInner.appendChild(dayDetails);
-          }
-
-          monthDetails.appendChild(monthInner);
-          listEl.appendChild(monthDetails);
-        }
-      }
-
-      function formatSentimentText(payload){
-        if(!payload) return "";
-        const answers = payload.answers || {};
-        const qs = payload.questions || DEFAULT_SENTIMENT_QUESTIONS;
-        const lines = [];
-        for(const q of qs){
-          const a = safeText(answers[q.key]).trim();
-          if(a) lines.push(`${q.label} ${a}`);
-        }
-        return lines.length ? lines.join("\n") : "No answers yet.";
-      }
-
-      async function buildImageGallery(imageIds, title){
-        const ids = Array.isArray(imageIds) ? imageIds : [];
-        if(!ids.length) return null;
-
-        const wrap = document.createElement("div");
-        wrap.className = "qblock";
-        wrap.style.padding = "10px";
-
-        const top = document.createElement("div");
-        top.className = "qtop";
-
-        const t = document.createElement("div");
-        t.className = "qtitle";
-        t.textContent = title || "Screenshots";
-
-        top.appendChild(t);
-        wrap.appendChild(top);
-
-        const thumbs = document.createElement("div");
-        thumbs.className = "thumbs";
-
-        for(const id of ids){
-          const rec = await getImageRecord(id);
-          if(!rec || !rec.blob) continue;
-          const url = URL.createObjectURL(rec.blob);
-          objectUrlsToRevoke.push(url);
-
-          const th = document.createElement("div");
-          th.className = "thumb";
-
-          const img = document.createElement("img");
-          img.src = url;
-          img.alt = rec.name || "screenshot";
-
-          th.addEventListener("click", ()=>{
-            openLightbox(url, rec.name || "Screenshot");
-          });
-
-          th.appendChild(img);
-          thumbs.appendChild(th);
-        }
-
-        if(!thumbs.children.length) return null;
-        wrap.appendChild(thumbs);
-        return wrap;
-      }
-
-      async function buildSentimentGallery(payload){
-        if(!payload || !payload.qImageIds) return null;
-        const qs = payload.questions || DEFAULT_SENTIMENT_QUESTIONS;
-        const qImageIds = payload.qImageIds || {};
-
-        // Build a compact gallery: each question that has images gets its own mini-block
-        const host = document.createElement("div");
-        host.style.display = "flex";
-        host.style.flexDirection = "column";
-        host.style.gap = "8px";
-
-        let any = false;
-
-        for(const q of qs){
-          const ids = Array.isArray(qImageIds[q.key]) ? qImageIds[q.key] : [];
-          if(!ids.length) continue;
-
-          any = true;
-          const block = document.createElement("div");
-          block.className = "qblock";
-          block.style.padding = "10px";
-
-          const top = document.createElement("div");
-          top.className = "qtop";
-          const title = document.createElement("div");
-          title.className = "qtitle";
-          title.textContent = `Screenshots: ${q.label}`;
-          top.appendChild(title);
-          block.appendChild(top);
-
-          const thumbs = document.createElement("div");
-          thumbs.className = "thumbs";
-
-          for(const id of ids){
-            const rec = await getImageRecord(id);
-            if(!rec || !rec.blob) continue;
-            const url = URL.createObjectURL(rec.blob);
-            objectUrlsToRevoke.push(url);
-
-            const th = document.createElement("div");
-            th.className = "thumb";
-
-            const img = document.createElement("img");
-            img.src = url;
-            img.alt = rec.name || "screenshot";
-
-            th.addEventListener("click", ()=>{
-              openLightbox(url, rec.name || "Screenshot");
-            });
-
-            th.appendChild(img);
-            thumbs.appendChild(th);
-          }
-
-          if(thumbs.children.length){
-            block.appendChild(thumbs);
-            host.appendChild(block);
-          }
-        }
-
-        return any ? host : null;
-      }
-
-      // ====== Lightbox ======
-      function openLightbox(url, title){
-        const lb = document.getElementById("lightbox");
-        const img = document.getElementById("lightboxImg");
-        const t = document.getElementById("lightboxTitle");
-        img.src = url;
-        t.textContent = title || "Screenshot";
-        lb.classList.add("open");
-        lb.setAttribute("aria-hidden", "false");
-      }
-
-      function closeLightbox(){
-        const lb = document.getElementById("lightbox");
-        lb.classList.remove("open");
-        lb.setAttribute("aria-hidden", "true");
-        document.getElementById("lightboxImg").src = "";
-      }
-
-      // ====== Rules ======
-      function loadRules(){
-        const v = localStorage.getItem(RULES_KEY) || "";
-        document.getElementById("rulesInput").value = v;
-      }
-      function saveRules(){
-        const v = safeText(document.getElementById("rulesInput").value);
-        localStorage.setItem(RULES_KEY, v);
-      }
-
-      // ====== Export ======
-      async function exportVisibleTxt(){
-        const query = safeText(document.getElementById("searchInput").value).toLowerCase().trim();
-        const all = await getAllEntries();
-        const filtered = query ? all.filter(e=> entryMatchesQuery(e, query)) : all;
-
-        filtered.sort((a,b)=> new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-
-        let out = "";
-        out += "TRADING RULES\n";
-        out += "----------------\n";
-        out += (localStorage.getItem(RULES_KEY) || "").trim() + "\n\n";
-
-        out += "JOURNAL EXPORT\n";
-        out += "----------------\n";
-        for(const e of filtered){
-          out += `\n[${e.dateKey}] ${safeText(e.kind).toUpperCase()} @ ${formatTime(e.createdAt)}\n`;
-          if(e.market) out += `Market: ${e.market}\n`;
-
-          if(e.kind === "sentiment"){
-            out += formatSentimentText(e.payload) + "\n";
-            const qImageIds = (e.payload && e.payload.qImageIds) ? e.payload.qImageIds : {};
-            for(const q of (e.payload && e.payload.questions) ? e.payload.questions : DEFAULT_SENTIMENT_QUESTIONS){
-              const ids = Array.isArray(qImageIds[q.key]) ? qImageIds[q.key] : [];
-              if(!ids.length) continue;
-              out += `  - ${q.label} screenshots:\n`;
-              for(const id of ids){
-                const rec = await getImageRecord(id);
-                out += `      • ${rec ? (rec.name || "image") : "image"} (id:${id})\n`;
-              }
-            }
-          } else {
-            out += safeText(e.payload && e.payload.text).trim() + "\n";
-            const ids = Array.isArray(e.imageIds) ? e.imageIds : [];
-            if(ids.length){
-              out += "Screenshots:\n";
-              for(const id of ids){
-                const rec = await getImageRecord(id);
-                out += `  • ${rec ? (rec.name || "image") : "image"} (id:${id})\n`;
-              }
-            }
-          }
-        }
-
-        const fname = `trading_export_${todayKey()}.txt`;
-        downloadText(fname, out.trim() + "\n");
-      }
-
-      // ====== Setup ======
-      async function setup(){
-        db = await openDB();
-
-        document.getElementById("todayPill").textContent = `Today: ${todayKey()}`;
-
-        // Rules
-        loadRules();
-        document.getElementById("saveRulesBtn").addEventListener("click", ()=>{
-          saveRules();
-        });
-
-        // Ctrl/Cmd+S saves rules (avoid browser save dialog)
-        window.addEventListener("keydown", (e)=>{
-          const isMac = navigator.platform.toLowerCase().includes("mac");
-          const mod = isMac ? e.metaKey : e.ctrlKey;
-          if(mod && e.key.toLowerCase() === "s"){
-            e.preventDefault();
-            saveRules();
-          }
-        });
-
-        // Sentiment
-        initSentimentState();
-        buildSentimentUI();
-        await loadTodaySentimentIntoForm();
-
-        document.getElementById("saveSentimentBtn").addEventListener("click", async ()=>{
-          await saveOrUpdateTodaySentiment();
-        });
-        document.getElementById("resetSentimentBtn").addEventListener("click", ()=>{
-          clearSentimentInputs();
-        });
-
-        // Journal entry images
-        const entryImgInput = document.getElementById("entryImgInput");
-        document.getElementById("addEntryImgBtn").addEventListener("click", ()=> entryImgInput.click());
-        entryImgInput.addEventListener("change", ()=>{
-          const files = Array.from(entryImgInput.files || []);
-          if(!files.length) return;
-          files.forEach(f=>{
-            const id = Date.now() + Math.random();
-            const url = URL.createObjectURL(f);
-            entryPendingFiles.push({id, file:f, url});
-          });
-          entryImgInput.value = "";
-          renderPendingEntryThumbs();
-        });
-        document.getElementById("clearEntryImgsBtn").addEventListener("click", ()=>{
-          entryPendingFiles.forEach(p=> URL.revokeObjectURL(p.url));
-          entryPendingFiles = [];
-          renderPendingEntryThumbs();
-        });
-
-        // Save entry
-        document.getElementById("saveEntryBtn").addEventListener("click", async ()=>{
-          await saveJournalEntry();
-        });
-
-        // Ctrl/Cmd+Enter saves entry (from textarea)
-        document.getElementById("entryText").addEventListener("keydown", (e)=>{
-          if((e.ctrlKey || e.metaKey) && e.key === "Enter"){
-            e.preventDefault();
-            document.getElementById("saveEntryBtn").click();
-          }
-        });
-
-        // Search
-        document.getElementById("searchInput").addEventListener("input", async ()=>{
-          await renderEntries(document.getElementById("searchInput").value);
-        });
-
-        // Export
-        document.getElementById("exportTxtBtn").addEventListener("click", async ()=>{
-          await exportVisibleTxt();
-        });
-
-        // Wipe
-        document.getElementById("wipeAllBtn").addEventListener("click", async ()=>{
-          if(!confirm("Wipe ALL local data (rules, sentiment, journal, images) for this site?")) return;
-          await wipeAll();
-          initSentimentState();
-          buildSentimentUI();
-          await loadTodaySentimentIntoForm();
-          loadRules();
-          document.getElementById("searchInput").value = "";
-          await renderEntries("");
-        });
-
-        // Lightbox close
-        document.getElementById("lightboxCloseBtn").addEventListener("click", closeLightbox);
-        document.getElementById("lightbox").addEventListener("click", (e)=>{
-          if(e.target && e.target.id === "lightbox") closeLightbox();
-        });
-        window.addEventListener("keydown", (e)=>{
-          if(e.key === "Escape") closeLightbox();
-        });
-
-        // Initial render
-        await renderEntries("");
-      }
-
-      window.addEventListener("DOMContentLoaded", ()=>{
-        setup().catch(err=>{
-          console.error(err);
-          alert("Failed to initialize app. See console for details.");
-        });
+  <!-- MARKETS -->
+  <div class="section-heading">
+    <span class="numeral">II.</span>
+    <h2>The Markets</h2>
+    <div class="rule"></div>
+  </div>
+
+  <div class="markets-grid" id="markets-grid"></div>
+
+  <!-- TRADE PANEL -->
+  <div class="section-heading" id="trade-heading" style="display:none;">
+    <span class="numeral">III.</span>
+    <h2>The Execution</h2>
+    <div class="rule"></div>
+  </div>
+
+  <div class="trade-panel" id="trade-panel">
+    <div class="trade-panel-header">
+      <h3 id="selected-symbol">—</h3>
+      <span class="tag" id="selected-tag">selected</span>
+    </div>
+
+    <div class="alignment" id="alignment">
+      <div class="alignment-arrows" id="alignment-arrows">— — —</div>
+      <div class="alignment-label" id="alignment-label">Awaiting confirmation</div>
+      <div class="alignment-sub">Daily · 4H · 1H</div>
+    </div>
+
+    <div class="timeframes">
+      <div class="tf-block">
+        <div class="tf-label">Daily</div>
+        <div class="tf-options" data-tf="daily">
+          <button class="tf-btn up" data-dir="up"><span class="arrow">↑</span> Uptrend</button>
+          <button class="tf-btn down" data-dir="down"><span class="arrow">↓</span> Downtrend</button>
+          <button class="tf-btn flat" data-dir="flat"><span class="arrow">→</span> Consolidating</button>
+        </div>
+      </div>
+      <div class="tf-block">
+        <div class="tf-label">4-Hour</div>
+        <div class="tf-options" data-tf="h4">
+          <button class="tf-btn up" data-dir="up"><span class="arrow">↑</span> Uptrend</button>
+          <button class="tf-btn down" data-dir="down"><span class="arrow">↓</span> Downtrend</button>
+          <button class="tf-btn flat" data-dir="flat"><span class="arrow">→</span> Consolidating</button>
+        </div>
+      </div>
+      <div class="tf-block">
+        <div class="tf-label">1-Hour</div>
+        <div class="tf-options" data-tf="h1">
+          <button class="tf-btn up" data-dir="up"><span class="arrow">↑</span> Uptrend</button>
+          <button class="tf-btn down" data-dir="down"><span class="arrow">↓</span> Downtrend
+          </button>
+          <button class="tf-btn flat" data-dir="flat"><span class="arrow">→</span> Consolidating</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="notes-section">
+      <label for="notes">Session Notes</label>
+      <textarea id="notes" placeholder="Entry, stop, target. Thesis. Feel. Anything worth remembering..."></textarea>
+      <div class="save-row">
+        <span class="save-status" id="save-status">auto-saved</span>
+        <button class="reset-btn" id="reset-trade">Clear this market</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ——— NUMEROLOGY ———————————————————————————————————————————
+
+  // Sum the digits of a number (e.g. 25 → 2+5 = 7)
+  function digitSum(n) {
+    return String(n).split('').reduce((a, b) => a + Number(b), 0);
+  }
+
+  // Reduce to single digit (no master number handling — we just show compound anyway)
+  function reduceToDigit(n) {
+    while (n > 9) n = digitSum(n);
+    return n;
+  }
+
+  // Format as "compound/reduced" e.g. 25/7, or just "7" if single digit
+  function format(n) {
+    const r = reduceToDigit(n);
+    if (n === r) return `<span>${n}</span>`;
+    return `<span>${n}</span><span class="reduced">/${r}</span>`;
+  }
+
+  // Universal year: sum digits of year, keep compound (e.g. 2026 → 10)
+  function universalYear(year) {
+    return digitSum(year);
+  }
+
+  // Personal year: if current date has passed birthday, use current year;
+  // otherwise use previous year. Then sum birth month + birth day + digits of that year.
+  function personalYear(birthMonth, birthDay, date) {
+    const y = date.getFullYear();
+    const m = date.getMonth() + 1;
+    const d = date.getDate();
+    const hasPassedBirthday = (m > birthMonth) || (m === birthMonth && d >= birthDay);
+    const refYear = hasPassedBirthday ? y : y - 1;
+    return digitSum(birthMonth) + digitSum(birthDay) + digitSum(refYear);
+  }
+
+  // Universal month: reduced month + reduced year digits (compound)
+  // e.g. April 2026: 4 + (2+0+2+6=10) = 14
+  function universalMonth(date) {
+    const m = date.getMonth() + 1;
+    const y = date.getFullYear();
+    return reduceToDigit(m) + digitSum(y);
+  }
+
+  // Universal day: reduced month + reduced day-of-month + reduced year
+  // User's formula: 4 + 6 + 10 = 20 (for 4/6/2026)
+  function universalDay(date) {
+    const m = date.getMonth() + 1;
+    const d = date.getDate();
+    const y = date.getFullYear();
+    return reduceToDigit(m) + reduceToDigit(d) + digitSum(y);
+  }
+
+  // Personal month: personal year + universal month (compound sums)
+  function personalMonth(birthMonth, birthDay, date) {
+    return personalYear(birthMonth, birthDay, date) + universalMonth(date);
+  }
+
+  // Personal day: personal year + universal day
+  function personalDay(birthMonth, birthDay, date) {
+    return personalYear(birthMonth, birthDay, date) + universalDay(date);
+  }
+
+  // ——— CONFIG ———————————————————————————————————————————————
+
+  const USER_BIRTH = { month: 9, day: 7 };
+
+  const MARKETS = [
+    { symbol: 'XAUUSD', label: 'Gold / USD',  birth: { month: 8,  day: 15, year: 1971 } },
+    { symbol: 'BTC',    label: 'Bitcoin',     birth: { month: 1,  day: 3,  year: 2009 } },
+    { symbol: 'US30',   label: 'Dow Jones',   birth: { month: 5,  day: 26, year: 1896 } },
+    { symbol: 'ZEC',    label: 'Zcash',       birth: { month: 10, day: 28, year: 2016 } },
+  ];
+
+  // ——— STATE ———————————————————————————————————————————————
+
+  const STORAGE_KEY = 'ritual-trade-checklist-v1';
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch (e) { return {}; }
+  }
+
+  function saveState(state) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+    catch (e) {}
+  }
+
+  let state = loadState();
+  if (!state.markets) state.markets = {};
+  if (!state.selected) state.selected = null;
+  if (!state.dateOverride) state.dateOverride = null;
+
+  function getActiveDate() {
+    if (state.dateOverride) {
+      // Parse as local date to avoid timezone shifts
+      const [y, m, d] = state.dateOverride.split('-').map(Number);
+      return new Date(y, m - 1, d);
+    }
+    return new Date();
+  }
+
+  // ——— RENDER: TODAY READING ———————————————————————————————
+
+  function renderToday() {
+    const date = getActiveDate();
+    const y = date.getFullYear();
+    const m = date.getMonth() + 1;
+    const d = date.getDate();
+
+    // Universal year
+    const uy = universalYear(y);
+    document.getElementById('u-year').innerHTML = format(uy);
+    document.getElementById('u-year-sub').textContent = `${y}`;
+
+    // Personal year
+    const py = personalYear(USER_BIRTH.month, USER_BIRTH.day, date);
+    document.getElementById('p-year').innerHTML = format(py);
+
+    // Universal month
+    const um = universalMonth(date);
+    document.getElementById('u-month').innerHTML = format(um);
+    const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    document.getElementById('u-month-sub').textContent = `${monthNames[m-1]} ${y}`;
+
+    // Personal month
+    const pm = personalMonth(USER_BIRTH.month, USER_BIRTH.day, date);
+    document.getElementById('p-month').innerHTML = format(pm);
+
+    // Universal day
+    const ud = universalDay(date);
+    document.getElementById('u-day').innerHTML = format(ud);
+    document.getElementById('u-day-sub').textContent = `${m}/${d}/${y}`;
+
+    // Personal day
+    const pd = personalDay(USER_BIRTH.month, USER_BIRTH.day, date);
+    document.getElementById('p-day').innerHTML = format(pd);
+  }
+
+  // ——— RENDER: MARKETS ————————————————————————————————————
+
+  function renderMarkets() {
+    const date = getActiveDate();
+    const grid = document.getElementById('markets-grid');
+    grid.innerHTML = '';
+
+    MARKETS.forEach(mkt => {
+      const py = personalYear(mkt.birth.month, mkt.birth.day, date);
+      const pm = personalMonth(mkt.birth.month, mkt.birth.day, date);
+      const pd = personalDay(mkt.birth.month, mkt.birth.day, date);
+
+      const card = document.createElement('div');
+      card.className = 'market-card' + (state.selected === mkt.symbol ? ' selected' : '');
+      card.innerHTML = `
+        <div class="market-header">
+          <div class="market-symbol">${mkt.symbol}</div>
+          <div class="market-founded">${mkt.birth.month}/${mkt.birth.day}/${mkt.birth.year}</div>
+        </div>
+        <div class="market-stats">
+          <div class="market-stat">
+            <div class="market-stat-label">P. Year</div>
+            <div class="market-stat-value">${format(py)}</div>
+          </div>
+          <div class="market-stat">
+            <div class="market-stat-label">P. Month</div>
+            <div class="market-stat-value">${format(pm)}</div>
+          </div>
+          <div class="market-stat">
+            <div class="market-stat-label">P. Day</div>
+            <div class="market-stat-value">${format(pd)}</div>
+          </div>
+        </div>
+      `;
+      card.addEventListener('click', () => {
+        state.selected = mkt.symbol;
+        saveState(state);
+        renderMarkets();
+        renderTradePanel();
       });
-    })();
-  </script>
+      grid.appendChild(card);
+    });
+  }
+
+  // ——— RENDER: TRADE PANEL ———————————————————————————————
+
+  function getMarketState(symbol) {
+    if (!state.markets[symbol]) {
+      state.markets[symbol] = { daily: null, h4: null, h1: null, notes: '' };
+    }
+    return state.markets[symbol];
+  }
+
+  function renderTradePanel() {
+    const panel = document.getElementById('trade-panel');
+    const heading = document.getElementById('trade-heading');
+
+    if (!state.selected) {
+      panel.classList.remove('active');
+      heading.style.display = 'none';
+      return;
+    }
+
+    panel.classList.add('active');
+    heading.style.display = 'flex';
+
+    const mkt = MARKETS.find(m => m.symbol === state.selected);
+    document.getElementById('selected-symbol').textContent = `${mkt.symbol} — ${mkt.label}`;
+
+    const ms = getMarketState(state.selected);
+
+    // Update button active states
+    document.querySelectorAll('.tf-options').forEach(group => {
+      const tf = group.dataset.tf;
+      group.querySelectorAll('.tf-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (ms[tf] === btn.dataset.dir) btn.classList.add('active');
+      });
+    });
+
+    // Notes
+    document.getElementById('notes').value = ms.notes || '';
+
+    // Alignment
+    renderAlignment(ms);
+  }
+
+  function renderAlignment(ms) {
+    const arrowEl = document.getElementById('alignment-arrows');
+    const labelEl = document.getElementById('alignment-label');
+
+    const arrowMap = { up: '↑', down: '↓', flat: '→' };
+    const classMap = { up: 'up', down: 'down', flat: 'flat' };
+
+    const parts = ['daily', 'h4', 'h1'].map(tf => {
+      const dir = ms[tf];
+      if (!dir) return '<span style="color:var(--bone-faint)">—</span>';
+      return `<span class="${classMap[dir]}">${arrowMap[dir]}</span>`;
+    });
+    arrowEl.innerHTML = parts.join(' ');
+
+    const dirs = [ms.daily, ms.h4, ms.h1];
+    const filled = dirs.filter(Boolean);
+
+    if (filled.length === 0) {
+      labelEl.textContent = 'Awaiting confirmation';
+    } else if (filled.length < 3) {
+      labelEl.textContent = `${filled.length} of 3 set`;
+    } else {
+      const allSame = dirs.every(d => d === dirs[0]);
+      if (allSame && dirs[0] === 'up') labelEl.textContent = 'Full bullish alignment';
+      else if (allSame && dirs[0] === 'down') labelEl.textContent = 'Full bearish alignment';
+      else if (allSame && dirs[0] === 'flat') labelEl.textContent = 'All consolidating — patience';
+      else {
+        const ups = dirs.filter(d => d === 'up').length;
+        const downs = dirs.filter(d => d === 'down').length;
+        if (ups >= 2) labelEl.textContent = 'Mixed — bullish lean';
+        else if (downs >= 2) labelEl.textContent = 'Mixed — bearish lean';
+        else labelEl.textContent = 'Mixed signals — caution';
+      }
+    }
+  }
+
+  // ——— EVENTS ——————————————————————————————————————————————
+
+  // Timeframe buttons
+  document.querySelectorAll('.tf-options').forEach(group => {
+    const tf = group.dataset.tf;
+    group.querySelectorAll('.tf-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (!state.selected) return;
+        const ms = getMarketState(state.selected);
+        // Toggle: click active button to clear
+        if (ms[tf] === btn.dataset.dir) ms[tf] = null;
+        else ms[tf] = btn.dataset.dir;
+        saveState(state);
+        renderTradePanel();
+        flashSaved();
+      });
+    });
+  });
+
+  // Notes with debounced save
+  let notesTimer;
+  document.getElementById('notes').addEventListener('input', (e) => {
+    if (!state.selected) return;
+    const ms = getMarketState(state.selected);
+    ms.notes = e.target.value;
+    clearTimeout(notesTimer);
+    const status = document.getElementById('save-status');
+    status.textContent = 'saving...';
+    status.classList.remove('saved');
+    notesTimer = setTimeout(() => {
+      saveState(state);
+      flashSaved();
+    }, 400);
+  });
+
+  function flashSaved() {
+    const status = document.getElementById('save-status');
+    status.textContent = '✓ saved';
+    status.classList.add('saved');
+  }
+
+  // Reset current market
+  document.getElementById('reset-trade').addEventListener('click', () => {
+    if (!state.selected) return;
+    if (!confirm('Clear all settings for ' + state.selected + '?')) return;
+    state.markets[state.selected] = { daily: null, h4: null, h1: null, notes: '' };
+    saveState(state);
+    renderTradePanel();
+  });
+
+  // Date override
+  const dateInput = document.getElementById('date-input');
+  function formatDateInput(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+
+  function initDateInput() {
+    const active = getActiveDate();
+    dateInput.value = formatDateInput(active);
+  }
+
+  dateInput.addEventListener('change', (e) => {
+    state.dateOverride = e.target.value || null;
+    saveState(state);
+    renderAll();
+  });
+
+  document.getElementById('reset-date').addEventListener('click', () => {
+    state.dateOverride = null;
+    saveState(state);
+    initDateInput();
+    renderAll();
+  });
+
+  // ——— INIT ————————————————————————————————————————————————
+
+  function renderAll() {
+    renderToday();
+    renderMarkets();
+    renderTradePanel();
+  }
+
+  initDateInput();
+  renderAll();
+</script>
+
 </body>
 </html>
