@@ -357,6 +357,108 @@
     font-size: 0.7em;
   }
 
+  /* DROPDOWN */
+  .select-row {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .select-row label {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.4rem;
+    color: var(--bone);
+  }
+
+  .select-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 260px;
+    max-width: 420px;
+  }
+
+  .select-wrap select {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    background: var(--ink-2);
+    border: 1px solid var(--edge);
+    color: var(--bone);
+    padding: 16px 44px 16px 20px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    cursor: pointer;
+    border-radius: 0;
+  }
+
+  .select-wrap select:focus {
+    outline: none;
+    border-color: var(--gold);
+  }
+
+  .select-caret {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gold);
+    pointer-events: none;
+    font-size: 1rem;
+  }
+
+  /* Selected market stats inside trade panel */
+  .selected-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--edge-soft);
+    border: 1px solid var(--edge);
+    margin-bottom: 32px;
+  }
+
+  .selected-stat {
+    background: var(--ink);
+    padding: 20px;
+    text-align: center;
+  }
+
+  .selected-stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--bone-faint);
+    margin-bottom: 8px;
+  }
+
+  .selected-stat-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    color: var(--bone);
+    line-height: 1;
+  }
+
+  .selected-stat-value .reduced {
+    color: var(--gold);
+    font-style: italic;
+    font-size: 0.65em;
+  }
+
+  .selected-stat-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--bone-faint);
+    margin-top: 6px;
+    letter-spacing: 0.1em;
+  }
+
+  @media (max-width: 600px) {
+    .selected-stats { grid-template-columns: 1fr; }
+  }
+
   /* TRADE PANEL */
   .trade-panel {
     background: var(--ink-2);
@@ -699,10 +801,20 @@
   <div class="markets-grid" id="markets-grid"></div>
 
   <!-- TRADE PANEL -->
-  <div class="section-heading" id="trade-heading" style="display:none;">
+  <div class="section-heading">
     <span class="numeral">III.</span>
     <h2>The Execution</h2>
     <div class="rule"></div>
+  </div>
+
+  <div class="select-row">
+    <label for="market-select">What are we trading?</label>
+    <div class="select-wrap">
+      <select id="market-select">
+        <option value="">— Choose a market —</option>
+      </select>
+      <span class="select-caret">▾</span>
+    </div>
   </div>
 
   <div class="trade-panel" id="trade-panel">
@@ -710,6 +822,9 @@
       <h3 id="selected-symbol">—</h3>
       <span class="tag" id="selected-tag">selected</span>
     </div>
+
+    <!-- Selected market full stats -->
+    <div class="selected-stats" id="selected-stats"></div>
 
     <div class="alignment" id="alignment">
       <div class="alignment-arrows" id="alignment-arrows">— — —</div>
@@ -954,19 +1069,44 @@
 
   function renderTradePanel() {
     const panel = document.getElementById('trade-panel');
-    const heading = document.getElementById('trade-heading');
+    const select = document.getElementById('market-select');
+
+    // Sync dropdown value
+    select.value = state.selected || '';
 
     if (!state.selected) {
       panel.classList.remove('active');
-      heading.style.display = 'none';
       return;
     }
 
     panel.classList.add('active');
-    heading.style.display = 'flex';
 
     const mkt = MARKETS.find(m => m.symbol === state.selected);
     document.getElementById('selected-symbol').textContent = `${mkt.symbol} — ${mkt.label}`;
+
+    // Render the selected market's full stats
+    const date = getActiveDate();
+    const py = personalYear(mkt.birth.month, mkt.birth.day, date);
+    const pm = personalMonth(mkt.birth.month, mkt.birth.day, date);
+    const pd = personalDay(mkt.birth.month, mkt.birth.day, date);
+    const statsEl = document.getElementById('selected-stats');
+    statsEl.innerHTML = `
+      <div class="selected-stat">
+        <div class="selected-stat-label">Personal Year</div>
+        <div class="selected-stat-value">${format(py)}</div>
+        <div class="selected-stat-sub">founded ${mkt.birth.month}/${mkt.birth.day}/${mkt.birth.year}</div>
+      </div>
+      <div class="selected-stat">
+        <div class="selected-stat-label">Personal Month</div>
+        <div class="selected-stat-value">${format(pm)}</div>
+        <div class="selected-stat-sub">current</div>
+      </div>
+      <div class="selected-stat">
+        <div class="selected-stat-label">Personal Day</div>
+        <div class="selected-stat-value">${format(pd)}</div>
+        <div class="selected-stat-sub">today</div>
+      </div>
+    `;
 
     const ms = getMarketState(state.selected);
 
@@ -1097,6 +1237,21 @@
     saveState(state);
     initDateInput();
     renderAll();
+  });
+
+  // Market dropdown
+  const marketSelect = document.getElementById('market-select');
+  MARKETS.forEach(mkt => {
+    const opt = document.createElement('option');
+    opt.value = mkt.symbol;
+    opt.textContent = `${mkt.symbol} — ${mkt.label}`;
+    marketSelect.appendChild(opt);
+  });
+  marketSelect.addEventListener('change', (e) => {
+    state.selected = e.target.value || null;
+    saveState(state);
+    renderMarkets();
+    renderTradePanel();
   });
 
   // ——— INIT ————————————————————————————————————————————————
