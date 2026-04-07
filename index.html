@@ -42,7 +42,6 @@
     z-index: 0;
   }
 
-  /* ── Top bar ── */
   .topbar {
     position: relative;
     z-index: 10;
@@ -53,7 +52,6 @@
     border-bottom: 1px solid var(--border);
     background: var(--bg);
   }
-
   .topbar h1 {
     font-family: 'Fraunces', serif;
     font-weight: 700;
@@ -62,7 +60,6 @@
     letter-spacing: -0.5px;
     white-space: nowrap;
   }
-
   .topbar-sub {
     font-size: 0.68rem;
     color: var(--muted);
@@ -70,7 +67,6 @@
     text-transform: uppercase;
     margin-right: auto;
   }
-
   .date-ctrl { display: flex; align-items: center; gap: 8px; }
   .date-ctrl label {
     font-size: 0.62rem;
@@ -103,40 +99,36 @@
   }
   .date-ctrl button:hover { color: var(--accent); border-color: var(--accent); }
 
-  /* ── Layout ── */
   .container {
     position: relative;
     z-index: 1;
-    max-width: 1100px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 32px 28px 80px;
+    padding: 40px 28px 100px;
   }
 
-  .section { margin-bottom: 36px; }
+  .section { margin-bottom: 44px; }
 
   .section-head {
     display: flex;
     align-items: baseline;
-    gap: 12px;
-    margin-bottom: 14px;
+    gap: 14px;
+    margin-bottom: 20px;
   }
-
   .section-num {
     font-family: 'Fraunces', serif;
     font-style: italic;
     font-weight: 300;
-    font-size: 1rem;
+    font-size: 1.1rem;
     color: var(--accent2);
   }
-
   .section-head h2 {
     font-family: 'Fraunces', serif;
     font-style: italic;
     font-weight: 300;
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     color: var(--text);
   }
-
   .section-head .rule {
     flex: 1;
     height: 1px;
@@ -144,18 +136,22 @@
     margin-left: 8px;
   }
 
-  /* ── Reading grid ── */
+  /* Reading grid — big square stat cells */
   .reading-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
   }
 
   .stat {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 16px 18px;
+    padding: 24px 22px;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     position: relative;
     overflow: hidden;
     animation: fadeUp 0.3s ease both;
@@ -171,29 +167,26 @@
     color: var(--muted);
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    margin-bottom: 10px;
     position: relative;
     z-index: 1;
   }
-
   .stat-value {
     font-family: 'Fraunces', serif;
-    font-size: 2.4rem;
+    font-size: 3rem;
     font-weight: 300;
     color: var(--text);
     line-height: 1;
-    letter-spacing: -1px;
+    letter-spacing: -1.5px;
+    margin-top: 10px;
     position: relative;
     z-index: 1;
   }
-
   .stat-value .reduced {
     color: var(--accent);
     font-style: italic;
     font-size: 0.55em;
     margin-left: 0.1em;
   }
-
   .stat-sub {
     font-size: 0.65rem;
     color: var(--muted);
@@ -204,113 +197,136 @@
 
   .stat.serpent {
     background: linear-gradient(135deg, var(--surface) 0%, #1a1e15 100%);
-    border-color: rgba(212, 242, 100, 0.25);
+    border-color: rgba(212, 242, 100, 0.3);
   }
   .stat.serpent .stat-label { color: var(--accent); }
 
   .snake-svg {
     position: absolute;
-    right: -8px;
-    bottom: -8px;
-    width: 80px;
-    height: 80px;
+    right: -10px;
+    bottom: -10px;
+    width: 120px;
+    height: 120px;
     color: var(--accent);
-    opacity: 0.2;
+    opacity: 0.18;
     pointer-events: none;
   }
 
-  /* ── Markets table ── */
-  .markets-table {
+  /* Market cards — clickable squares */
+  .markets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 12px;
+  }
+
+  .market-card {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 10px;
+    padding: 20px 22px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    position: relative;
     overflow: hidden;
+    animation: fadeUp 0.3s ease both;
   }
 
-  .mt-head {
-    display: grid;
-    grid-template-columns: 1.2fr 1.2fr 1fr 1fr 1fr;
-    padding: 12px 18px;
-    border-bottom: 1px solid var(--border);
+  .market-card:hover {
     background: var(--surface2);
+    border-color: var(--muted);
   }
-  .mt-head div {
-    font-size: 0.6rem;
-    color: var(--muted);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-  }
-  .mt-head div:not(:first-child):not(:nth-child(2)) { text-align: center; }
 
-  .mt-row {
-    display: grid;
-    grid-template-columns: 1.2fr 1.2fr 1fr 1fr 1fr;
-    padding: 14px 18px;
-    border-bottom: 1px solid var(--border);
-    align-items: center;
-    transition: background 0.12s;
+  .market-card.selected {
+    background: var(--surface2);
+    border-color: var(--accent);
   }
-  .mt-row:last-child { border-bottom: none; }
-  .mt-row:hover { background: var(--surface2); }
 
-  .mt-symbol {
+  .market-card.selected::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--accent);
+  }
+
+  .mc-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 18px;
+  }
+  .mc-symbol {
     font-family: 'Fraunces', serif;
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 1.4rem;
     color: var(--accent);
-    letter-spacing: -0.3px;
+    letter-spacing: -0.5px;
+    line-height: 1;
   }
-  .mt-label {
-    font-size: 0.7rem;
+  .mc-label {
+    font-size: 0.68rem;
     color: var(--muted);
-    display: block;
-    margin-top: 2px;
-    font-family: 'DM Mono', monospace;
-    font-weight: 400;
-    letter-spacing: 0;
+    margin-top: 4px;
+  }
+  .mc-founded {
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-align: right;
+    text-transform: uppercase;
   }
 
-  .mt-founded {
-    font-size: 0.72rem;
-    color: var(--muted);
+  .mc-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
   }
-
-  .mt-num {
-    text-align: center;
+  .mc-stat { text-align: center; }
+  .mc-stat-label {
+    font-size: 0.55rem;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .mc-stat-value {
     font-family: 'Fraunces', serif;
-    font-size: 1.15rem;
+    font-size: 1.3rem;
     color: var(--text);
+    font-weight: 300;
+    line-height: 1;
   }
-  .mt-num .reduced {
+  .mc-stat-value .reduced {
     color: var(--accent);
     font-style: italic;
-    font-size: 0.7em;
+    font-size: 0.65em;
   }
 
-  /* ── Dropdown ── */
+  /* Dropdown */
   .select-row {
     display: flex;
     align-items: center;
-    gap: 14px;
-    margin-bottom: 16px;
+    gap: 16px;
+    margin-bottom: 18px;
     flex-wrap: wrap;
   }
-
   .select-row label {
     font-family: 'Fraunces', serif;
     font-style: italic;
     font-weight: 300;
-    font-size: 1rem;
+    font-size: 1.1rem;
     color: var(--text);
   }
-
   .select-wrap {
     position: relative;
     flex: 1;
-    max-width: 340px;
-    min-width: 220px;
+    max-width: 360px;
+    min-width: 240px;
   }
-
   .select-wrap select {
     appearance: none;
     -webkit-appearance: none;
@@ -319,8 +335,8 @@
     border: 1px solid var(--border);
     color: var(--text);
     font-family: 'DM Mono', monospace;
-    font-size: 0.8rem;
-    padding: 11px 38px 11px 14px;
+    font-size: 0.82rem;
+    padding: 12px 40px 12px 16px;
     border-radius: 6px;
     cursor: pointer;
     outline: none;
@@ -328,7 +344,6 @@
   }
   .select-wrap select:focus,
   .select-wrap select:hover { border-color: var(--accent); }
-
   .select-caret {
     position: absolute;
     right: 14px;
@@ -339,7 +354,7 @@
     font-size: 0.75rem;
   }
 
-  /* ── Trade panel ── */
+  /* Trade panel */
   .trade-panel {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -351,7 +366,7 @@
   .trade-panel.active { display: block; }
 
   .tp-head {
-    padding: 14px 18px;
+    padding: 16px 22px;
     border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
@@ -363,7 +378,7 @@
     font-size: 0.62rem;
     font-weight: 500;
     letter-spacing: 0.08em;
-    padding: 3px 7px;
+    padding: 3px 8px;
     border-radius: 4px;
     text-transform: uppercase;
   }
@@ -371,7 +386,7 @@
     font-family: 'Fraunces', serif;
     font-style: italic;
     font-weight: 300;
-    font-size: 1.05rem;
+    font-size: 1.15rem;
     color: var(--text);
   }
 
@@ -381,7 +396,7 @@
     border-bottom: 1px solid var(--border);
   }
   .tp-stat {
-    padding: 16px 18px;
+    padding: 20px;
     text-align: center;
     border-right: 1px solid var(--border);
   }
@@ -391,11 +406,11 @@
     color: var(--muted);
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
   }
   .tp-stat-value {
     font-family: 'Fraunces', serif;
-    font-size: 1.6rem;
+    font-size: 1.9rem;
     color: var(--text);
     line-height: 1;
     font-weight: 300;
@@ -403,11 +418,11 @@
   .tp-stat-value .reduced {
     color: var(--accent);
     font-style: italic;
-    font-size: 0.65em;
+    font-size: 0.6em;
   }
 
   .alignment {
-    padding: 18px;
+    padding: 22px;
     border-bottom: 1px solid var(--border);
     text-align: center;
     background: var(--surface2);
@@ -417,14 +432,14 @@
     color: var(--muted);
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
   }
   .align-arrows {
     font-family: 'Fraunces', serif;
-    font-size: 2.2rem;
+    font-size: 2.4rem;
     letter-spacing: 0.25em;
     line-height: 1;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
   }
   .align-arrows .up { color: var(--up); }
   .align-arrows .down { color: var(--down); }
@@ -434,59 +449,59 @@
     font-family: 'Fraunces', serif;
     font-style: italic;
     font-weight: 300;
-    font-size: 1rem;
+    font-size: 1.1rem;
     color: var(--text);
   }
 
   .timeframes {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    padding: 18px;
-    gap: 14px;
+    padding: 22px;
+    gap: 16px;
     border-bottom: 1px solid var(--border);
   }
   .tf-block {
     background: var(--surface2);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 14px;
+    padding: 16px;
   }
   .tf-label {
     font-size: 0.6rem;
     color: var(--muted);
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
   }
-  .tf-opts { display: flex; flex-direction: column; gap: 6px; }
+  .tf-opts { display: flex; flex-direction: column; gap: 7px; }
   .tf-btn {
     background: transparent;
     border: 1px solid var(--border);
     color: var(--muted);
     font-family: 'DM Mono', monospace;
-    font-size: 0.72rem;
-    padding: 9px 11px;
+    font-size: 0.75rem;
+    padding: 10px 12px;
     border-radius: 5px;
     cursor: pointer;
     text-align: left;
     display: flex;
     align-items: center;
-    gap: 9px;
+    gap: 10px;
     transition: all 0.15s;
   }
   .tf-btn:hover { color: var(--text); border-color: var(--muted); }
-  .tf-btn .arrow { font-size: 0.95rem; width: 14px; display: inline-block; }
+  .tf-btn .arrow { font-size: 1rem; width: 14px; display: inline-block; }
   .tf-btn.up .arrow { color: var(--up); }
   .tf-btn.down .arrow { color: var(--down); }
   .tf-btn.flat .arrow { color: var(--flat); }
 
   .tf-btn.active.up {
-    background: rgba(106,242,176,0.1);
+    background: rgba(106,242,176,0.12);
     border-color: var(--up);
     color: var(--text);
   }
   .tf-btn.active.down {
-    background: rgba(255,92,92,0.1);
+    background: rgba(255,92,92,0.12);
     border-color: var(--down);
     color: var(--text);
   }
@@ -496,7 +511,7 @@
     color: var(--text);
   }
 
-  .notes-section { padding: 18px; }
+  .notes-section { padding: 22px; }
   .notes-label {
     font-size: 0.6rem;
     color: var(--muted);
@@ -506,14 +521,14 @@
   }
   .notes-area {
     width: 100%;
-    min-height: 110px;
+    min-height: 120px;
     background: var(--surface2);
     border: 1px solid var(--border);
     color: var(--text);
     font-family: 'DM Mono', monospace;
     font-size: 0.82rem;
     line-height: 1.65;
-    padding: 12px 14px;
+    padding: 14px 16px;
     border-radius: 6px;
     resize: vertical;
     outline: none;
@@ -526,7 +541,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 10px;
+    margin-top: 12px;
   }
   .save-confirm {
     font-size: 0.68rem;
@@ -540,26 +555,23 @@
     color: var(--muted);
     font-family: 'DM Mono', monospace;
     font-size: 0.68rem;
-    padding: 6px 12px;
+    padding: 7px 14px;
     border-radius: 5px;
     cursor: pointer;
     transition: all 0.15s;
   }
   .btn-clear:hover { color: var(--red); border-color: var(--red); }
 
-  @media (max-width: 800px) {
-    .mt-head, .mt-row { grid-template-columns: 1.2fr 1fr 1fr 1fr; }
-    .mt-head div:nth-child(2), .mt-row > :nth-child(2) { display: none; }
+  @media (max-width: 700px) {
     .timeframes { grid-template-columns: 1fr; }
     .tp-stats { grid-template-columns: 1fr; }
     .tp-stat { border-right: none; border-bottom: 1px solid var(--border); }
     .tp-stat:last-child { border-bottom: none; }
+    .stat-value { font-size: 2.4rem; }
   }
-
   @media (max-width: 560px) {
     .topbar { flex-wrap: wrap; }
     .topbar-sub { display: none; }
-    .stat-value { font-size: 2rem; }
   }
 </style>
 </head>
@@ -587,8 +599,10 @@
       <div class="reading-grid">
         <div class="stat">
           <div class="stat-label">Universal Year</div>
-          <div class="stat-value" id="u-year">—</div>
-          <div class="stat-sub" id="u-year-sub">—</div>
+          <div>
+            <div class="stat-value" id="u-year">—</div>
+            <div class="stat-sub" id="u-year-sub">—</div>
+          </div>
         </div>
 
         <div class="stat serpent">
@@ -597,33 +611,43 @@
             <circle cx="20" cy="25" r="1.8" fill="currentColor" stroke="none"/>
             <path d="M17 22 L 20 25 L 23 22" stroke-linecap="round"/>
           </svg>
-          <div class="stat-label">Personal Year · ∞</div>
-          <div class="stat-value" id="p-year">—</div>
-          <div class="stat-sub">birthday 9/7</div>
+          <div class="stat-label">Personal Year · Serpent</div>
+          <div>
+            <div class="stat-value" id="p-year">—</div>
+            <div class="stat-sub">birthday 9/7</div>
+          </div>
         </div>
 
         <div class="stat">
           <div class="stat-label">Universal Month</div>
-          <div class="stat-value" id="u-month">—</div>
-          <div class="stat-sub" id="u-month-sub">—</div>
+          <div>
+            <div class="stat-value" id="u-month">—</div>
+            <div class="stat-sub" id="u-month-sub">—</div>
+          </div>
         </div>
 
         <div class="stat">
           <div class="stat-label">Personal Month</div>
-          <div class="stat-value" id="p-month">—</div>
-          <div class="stat-sub">p.year + u.month</div>
+          <div>
+            <div class="stat-value" id="p-month">—</div>
+            <div class="stat-sub">p.year + u.month</div>
+          </div>
         </div>
 
         <div class="stat">
           <div class="stat-label">Universal Day</div>
-          <div class="stat-value" id="u-day">—</div>
-          <div class="stat-sub" id="u-day-sub">—</div>
+          <div>
+            <div class="stat-value" id="u-day">—</div>
+            <div class="stat-sub" id="u-day-sub">—</div>
+          </div>
         </div>
 
         <div class="stat">
           <div class="stat-label">Personal Day</div>
-          <div class="stat-value" id="p-day">—</div>
-          <div class="stat-sub">p.year + u.day</div>
+          <div>
+            <div class="stat-value" id="p-day">—</div>
+            <div class="stat-sub">p.year + u.day</div>
+          </div>
         </div>
       </div>
     </div>
@@ -635,16 +659,7 @@
         <div class="rule"></div>
       </div>
 
-      <div class="markets-table">
-        <div class="mt-head">
-          <div>symbol</div>
-          <div>founded</div>
-          <div>p.year</div>
-          <div>p.month</div>
-          <div>p.day</div>
-        </div>
-        <div id="markets-body"></div>
-      </div>
+      <div class="markets-grid" id="markets-grid"></div>
     </div>
 
     <div class="section">
@@ -750,7 +765,7 @@
     { symbol: 'ZEC',    label: 'zcash',       birth: { month: 10, day: 28, year: 2016 } },
   ];
 
-  const STORAGE_KEY = 'trade-checklist-v2';
+  const STORAGE_KEY = 'trade-checklist-v3';
   function loadState() {
     try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
     catch (e) { return {}; }
@@ -789,25 +804,45 @@
 
   function renderMarkets() {
     const date = getActiveDate();
-    const body = document.getElementById('markets-body');
-    body.innerHTML = '';
+    const grid = document.getElementById('markets-grid');
+    grid.innerHTML = '';
     MARKETS.forEach(mkt => {
       const py = personalYear(mkt.birth.month, mkt.birth.day, date);
       const pm = personalMonth(mkt.birth.month, mkt.birth.day, date);
       const pd = personalDay(mkt.birth.month, mkt.birth.day, date);
-      const row = document.createElement('div');
-      row.className = 'mt-row';
-      row.innerHTML = `
-        <div>
-          <span class="mt-symbol">${mkt.symbol}</span>
-          <span class="mt-label">${mkt.label}</span>
+      const card = document.createElement('div');
+      card.className = 'market-card' + (state.selected === mkt.symbol ? ' selected' : '');
+      card.innerHTML = `
+        <div class="mc-head">
+          <div>
+            <div class="mc-symbol">${mkt.symbol}</div>
+            <div class="mc-label">${mkt.label}</div>
+          </div>
+          <div class="mc-founded">${mkt.birth.month}/${mkt.birth.day}/${mkt.birth.year}</div>
         </div>
-        <div class="mt-founded">${mkt.birth.month}/${mkt.birth.day}/${mkt.birth.year}</div>
-        <div class="mt-num">${format(py)}</div>
-        <div class="mt-num">${format(pm)}</div>
-        <div class="mt-num">${format(pd)}</div>
+        <div class="mc-stats">
+          <div class="mc-stat">
+            <div class="mc-stat-label">p.year</div>
+            <div class="mc-stat-value">${format(py)}</div>
+          </div>
+          <div class="mc-stat">
+            <div class="mc-stat-label">p.month</div>
+            <div class="mc-stat-value">${format(pm)}</div>
+          </div>
+          <div class="mc-stat">
+            <div class="mc-stat-label">p.day</div>
+            <div class="mc-stat-value">${format(pd)}</div>
+          </div>
+        </div>
       `;
-      body.appendChild(row);
+      card.addEventListener('click', () => {
+        state.selected = mkt.symbol;
+        saveState();
+        renderMarkets();
+        renderTradePanel();
+        document.getElementById('trade-panel').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+      grid.appendChild(card);
     });
   }
 
@@ -900,6 +935,7 @@
   marketSelect.addEventListener('change', e => {
     state.selected = e.target.value || null;
     saveState();
+    renderMarkets();
     renderTradePanel();
   });
 
