@@ -843,7 +843,7 @@
           <div class="stat-label">Personal Month</div>
           <div>
             <div class="stat-value" id="p-month">—</div>
-            <div class="stat-sub">p.year + u.month</div>
+            <div class="stat-sub">p.year + current month</div>
           </div>
         </div>
         <div class="stat">
@@ -857,7 +857,7 @@
           <div class="stat-label">Personal Day</div>
           <div>
             <div class="stat-value" id="p-day">—</div>
-            <div class="stat-sub">p.year + u.day</div>
+            <div class="stat-sub">p.month + day of year</div>
           </div>
         </div>
       </div>
@@ -984,7 +984,13 @@
 <script>
   // ─── NUMEROLOGY ─────────────────────────────────────────────
   function digitSum(n) { return String(n).split('').reduce((a,b)=>a+Number(b),0); }
-  function reduceToDigit(n) { while(n>9) n=digitSum(n); return n; }
+  function reduceToDigit(n) {
+    while (n > 9) {
+      if (n === 11) return 11; // master number, don't reduce further
+      n = digitSum(n);
+    }
+    return n;
+  }
   function format(n) {
     const r = reduceToDigit(n);
     if (n === r) return `<span>${n}</span>`;
@@ -1003,8 +1009,32 @@
   function universalDay(date) {
     return reduceToDigit(date.getMonth()+1) + reduceToDigit(date.getDate()) + digitSum(date.getFullYear());
   }
-  function personalMonth(bm, bd, date) { return personalYear(bm, bd, date) + universalMonth(date); }
-  function personalDay(bm, bd, date) { return personalYear(bm, bd, date) + universalDay(date); }
+  // Personal month: personal year + current calendar month number.
+  // BUT the month doesn't flip on the 1st — it flips on the birth day-of-month.
+  // If today's day-of-month is before the birth day-of-month, use the PREVIOUS
+  // calendar month (wrapping to December if we're in January).
+  function personalMonth(bm, bd, date) {
+    const py = personalYear(bm, bd, date);
+    const d = date.getDate();
+    let m = date.getMonth() + 1; // 1-12
+    if (d < bd) {
+      m -= 1;
+      if (m === 0) m = 12;
+    }
+    return py + m;
+  }
+
+  // Day-of-year: 1–365 (or 366 in leap years). Resets on Jan 1.
+  function dayOfYear(date) {
+    const start = new Date(date.getFullYear(), 0, 1);
+    const diff = (date - start) + ((start.getTimezoneOffset() - date.getTimezoneOffset()) * 60 * 1000);
+    return Math.floor(diff / 86400000) + 1;
+  }
+
+  // Personal day: personal month (compound, not reduced) + day-of-year
+  function personalDay(bm, bd, date) {
+    return personalMonth(bm, bd, date) + dayOfYear(date);
+  }
 
   // ─── CONFIG ─────────────────────────────────────────────────
   const USER_BIRTH = { month: 9, day: 7 };
