@@ -1359,34 +1359,6 @@
   }
 
   function evalRule(rule, marketState) {
-    const parsed = parseRuleText(rule.text);
-
-    if (parsed.kind === 'time-avoid') {
-      const now = nowMinutes();
-      const inWindow = now >= parsed.from && now <= parsed.to;
-      return inWindow
-        ? { status: 'fail', label: `inside avoid window · now ${formatTimeMin(now)}`, kind: parsed.kind }
-        : { status: 'pass', label: `clear of avoid window · now ${formatTimeMin(now)}`, kind: parsed.kind };
-    }
-    if (parsed.kind === 'time-prefer') {
-      const now = nowMinutes();
-      const inWindow = now >= parsed.from && now <= parsed.to;
-      if (inWindow) return { status: 'pass', label: `inside ideal window · now ${formatTimeMin(now)}`, kind: parsed.kind };
-      // Not in window — compute countdown
-      let mins = parsed.from - now;
-      if (mins < 0) mins += 24 * 60;
-      const h = Math.floor(mins / 60), m = mins % 60;
-      const countdown = h > 0 ? `${h}h ${m}m` : `${m}m`;
-      return { status: 'warn', label: `opens in ${countdown} · at ${formatTimeMin(parsed.from)}`, kind: parsed.kind };
-    }
-    if (parsed.kind === 'alignment') {
-      if (!marketState) return { status: 'unknown', label: 'pick a market to evaluate', kind: parsed.kind };
-      const { h4, h1 } = marketState;
-      if (!h4 || !h1) return { status: 'unknown', label: 'set 1h and 4h trends', kind: parsed.kind };
-      if (h4 === h1) return { status: 'pass', label: `${h4} aligned`, kind: parsed.kind };
-      return { status: 'fail', label: `1h is ${h1}, 4h is ${h4}`, kind: parsed.kind };
-    }
-    // Manual
     const checked = !!state.manualChecks[rule.id];
     return {
       status: checked ? 'pass' : 'manual',
