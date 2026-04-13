@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Trade Checklist</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,wght@0,300;0,700;1,300&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230e0e10'/%3E%3Cpolyline points='5,24 11,18 15,21 20,12 26,7' fill='none' stroke='%23d4f264' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpolyline points='22,7 26,7 26,11' fill='none' stroke='%23d4f264' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,wght@0,300;0,700;1,300&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -303,76 +304,228 @@
     font-size: 0.65em;
   }
 
+  /* ── VERDICT BANNER ── */
+  .verdict {
+    position: relative;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 32px 40px;
+    margin-bottom: 44px;
+    overflow: hidden;
+    animation: fadeUp 0.4s ease both;
+    background: var(--surface);
+  }
+  .verdict::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--muted);
+    transition: background 0.3s;
+  }
+  .verdict.go {
+    background: linear-gradient(135deg, var(--surface) 0%, rgba(106,242,176,0.08) 100%);
+    border-color: rgba(106,242,176,0.4);
+  }
+  .verdict.go::before { background: var(--up); }
+  .verdict.caution {
+    background: linear-gradient(135deg, var(--surface) 0%, rgba(242,199,106,0.08) 100%);
+    border-color: rgba(242,199,106,0.4);
+  }
+  .verdict.caution::before { background: var(--warn); }
+  .verdict.stop {
+    background: linear-gradient(135deg, var(--surface) 0%, rgba(255,92,92,0.08) 100%);
+    border-color: rgba(255,92,92,0.5);
+  }
+  .verdict.stop::before { background: var(--down); }
+
+  .verdict-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .verdict-text {
+    font-family: 'Instrument Serif', serif;
+    font-size: 4.2rem;
+    line-height: 0.95;
+    letter-spacing: -2px;
+    color: var(--text);
+    font-weight: 400;
+  }
+  .verdict.go .verdict-text { color: var(--up); }
+  .verdict.caution .verdict-text { color: var(--warn); }
+  .verdict.stop .verdict-text { color: var(--down); }
+
+  .verdict-sub {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 1.35rem;
+    color: var(--muted);
+    margin-top: 12px;
+    line-height: 1.4;
+  }
+
+  .verdict-counts {
+    display: flex;
+    gap: 24px;
+    margin-top: 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+  .verdict-counts span strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+  .verdict-counts .passing strong { color: var(--up); }
+  .verdict-counts .failing strong { color: var(--down); }
+  .verdict-counts .warning strong { color: var(--warn); }
+
+  @media (max-width: 560px) {
+    .verdict { padding: 24px 22px; }
+    .verdict-text { font-size: 2.8rem; }
+    .verdict-sub { font-size: 1.05rem; }
+    .verdict-counts { flex-wrap: wrap; gap: 12px 20px; }
+  }
+
   /* ── RULES ── */
-  .rules-card {
+  .rules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .rule-card {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 10px;
-    overflow: hidden;
-  }
-  .rule-item {
+    padding: 20px 22px;
+    position: relative;
     display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 14px 20px;
-    border-bottom: 1px solid var(--border);
-    transition: background 0.12s;
+    gap: 16px;
+    align-items: flex-start;
+    transition: background 0.12s, border-color 0.15s;
+    animation: fadeUp 0.3s ease both;
+    min-height: 110px;
   }
-  .rule-item:last-child { border-bottom: none; }
-  .rule-item:hover { background: var(--surface2); }
+  .rule-card:hover { background: var(--surface2); }
+
+  /* severity edge — left stripe */
+  .rule-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 10px 0 0 10px;
+    background: var(--muted);
+    transition: background 0.2s;
+  }
+  .rule-card.hard::before { background: var(--down); }
+  .rule-card.soft::before { background: var(--warn); }
+
+  .rule-card.pass { border-color: rgba(106,242,176,0.35); }
+  .rule-card.fail { border-color: rgba(255,92,92,0.5); background: linear-gradient(135deg, var(--surface) 0%, rgba(255,92,92,0.04) 100%); }
+  .rule-card.warn { border-color: rgba(242,199,106,0.35); }
 
   .rule-status {
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.85rem;
+    font-size: 1.15rem;
     font-weight: 500;
     flex-shrink: 0;
     border: 1px solid var(--border);
     background: var(--surface2);
     color: var(--muted);
   }
-  .rule-status.pass {
-    background: rgba(106,242,176,0.12);
-    border-color: var(--up);
-    color: var(--up);
-  }
-  .rule-status.fail {
-    background: rgba(255,92,92,0.12);
-    border-color: var(--down);
-    color: var(--down);
-  }
-  .rule-status.warn {
-    background: rgba(242,199,106,0.12);
-    border-color: var(--warn);
-    color: var(--warn);
-  }
-  .rule-status.manual {
-    cursor: pointer;
-  }
-  .rule-status.manual.checked {
-    background: rgba(106,242,176,0.12);
-    border-color: var(--up);
-    color: var(--up);
-  }
+  .rule-status.pass { background: rgba(106,242,176,0.14); border-color: var(--up); color: var(--up); }
+  .rule-status.fail { background: rgba(255,92,92,0.14); border-color: var(--down); color: var(--down); }
+  .rule-status.warn { background: rgba(242,199,106,0.14); border-color: var(--warn); color: var(--warn); }
+  .rule-status.manual { cursor: pointer; transition: all 0.15s; }
+  .rule-status.manual:hover { border-color: var(--accent); color: var(--accent); }
+  .rule-status.manual.checked { background: rgba(106,242,176,0.14); border-color: var(--up); color: var(--up); }
 
   .rule-body { flex: 1; min-width: 0; }
+
   .rule-text {
-    font-size: 0.82rem;
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.35rem;
     color: var(--text);
-    line-height: 1.4;
+    line-height: 1.25;
+    letter-spacing: 0.01em;
+    cursor: text;
+    outline: none;
+    border-radius: 4px;
+    padding: 2px 4px;
+    margin: -2px -4px;
+    transition: background 0.12s;
+    word-wrap: break-word;
   }
-  .rule-meta {
-    font-size: 0.6rem;
+  .rule-text:hover { background: rgba(255,255,255,0.03); }
+  .rule-text:focus { background: rgba(212,242,100,0.06); }
+  .rule-text:empty::before {
+    content: 'type your rule…';
     color: var(--muted);
-    margin-top: 3px;
-    letter-spacing: 0.06em;
+    font-style: italic;
   }
 
+  .rule-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    margin-top: 8px;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .rule-type-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    opacity: 0.7;
+  }
+
+  /* severity toggle pill */
+  .rule-severity {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 99px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--muted);
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .rule-severity.hard {
+    color: var(--down);
+    border-color: rgba(255,92,92,0.5);
+    background: rgba(255,92,92,0.1);
+  }
+  .rule-severity.soft {
+    color: var(--warn);
+    border-color: rgba(242,199,106,0.5);
+    background: rgba(242,199,106,0.1);
+  }
+  .rule-severity:hover { opacity: 0.8; }
+
   .rule-delete {
+    position: absolute;
+    top: 10px;
+    right: 10px;
     background: none;
     border: none;
     color: var(--muted);
@@ -382,43 +535,34 @@
     border-radius: 4px;
     opacity: 0;
     transition: opacity 0.15s, color 0.15s;
-    flex-shrink: 0;
+    line-height: 1;
   }
-  .rule-item:hover .rule-delete { opacity: 1; }
+  .rule-card:hover .rule-delete { opacity: 1; }
   .rule-delete:hover { color: var(--red); }
 
-  .rule-add-form {
-    padding: 16px 20px;
-    background: var(--surface2);
-    display: none;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .rule-add-form.active { display: flex; }
-  .rule-add-form select,
-  .rule-add-form input {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    font-size: 0.78rem;
-    padding: 9px 12px;
-    border-radius: 5px;
-    outline: none;
-  }
-  .rule-add-form select:focus,
-  .rule-add-form input:focus { border-color: var(--accent); }
-  .rule-add-row {
+  /* Add-rule card (a rule card that's a big "+" prompt) */
+  .rule-add {
+    background: transparent;
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    padding: 20px 22px;
+    min-height: 110px;
     display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--muted);
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 1.2rem;
+    transition: all 0.15s;
   }
-  .rule-add-row > * { flex: 1; min-width: 110px; }
-  .rule-add-actions {
-    display: flex;
-    gap: 8px;
-    justify-content: flex-end;
+  .rule-add:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(212,242,100,0.03);
   }
+
   .btn-primary {
     background: var(--accent);
     color: #0e0e10;
@@ -805,10 +949,28 @@
 
   <div class="container">
 
-    <!-- THE READING -->
+    <!-- VERDICT BANNER -->
+    <div class="verdict" id="verdict">
+      <div class="verdict-label">verdict</div>
+      <div class="verdict-text" id="verdict-text">—</div>
+      <div class="verdict-sub" id="verdict-sub">add your first rule to begin</div>
+      <div class="verdict-counts" id="verdict-counts"></div>
+    </div>
+
+    <!-- THE RULES -->
     <div class="section">
       <div class="section-head">
         <span class="section-num">i.</span>
+        <h2>the rules</h2>
+        <div class="rule"></div>
+      </div>
+      <div class="rules-grid" id="rules-grid"></div>
+    </div>
+
+    <!-- THE READING -->
+    <div class="section">
+      <div class="section-head">
+        <span class="section-num">ii.</span>
         <h2>the reading</h2>
         <div class="rule"></div>
       </div>
@@ -866,41 +1028,11 @@
     <!-- THE MARKETS -->
     <div class="section">
       <div class="section-head">
-        <span class="section-num">ii.</span>
+        <span class="section-num">iii.</span>
         <h2>the markets</h2>
         <div class="rule"></div>
       </div>
       <div class="markets-grid" id="markets-grid"></div>
-    </div>
-
-    <!-- THE RULES -->
-    <div class="section">
-      <div class="section-head">
-        <span class="section-num">iii.</span>
-        <h2>the rules</h2>
-        <div class="rule"></div>
-        <button class="head-action" id="add-rule-btn">+ add rule</button>
-      </div>
-      <div class="rules-card">
-        <div class="rule-add-form" id="rule-add-form">
-          <div class="rule-add-row">
-            <select id="rule-type">
-              <option value="time-avoid">avoid time window</option>
-              <option value="time-prefer">prefer time window</option>
-              <option value="alignment">timeframes must align</option>
-              <option value="manual">manual checklist item</option>
-            </select>
-            <input type="text" id="rule-from" placeholder="from (e.g. 9:00 or 9am)">
-            <input type="text" id="rule-to" placeholder="to (e.g. 10:00 or 10am)">
-          </div>
-          <input type="text" id="rule-text" placeholder="rule description (e.g. 'don't trade during news')">
-          <div class="rule-add-actions">
-            <button class="btn-secondary" id="rule-cancel">cancel</button>
-            <button class="btn-primary" id="rule-save">save rule</button>
-          </div>
-        </div>
-        <div id="rules-list"></div>
-      </div>
     </div>
 
     <!-- THE EXECUTION -->
@@ -1046,13 +1178,13 @@
   ];
 
   const DEFAULT_RULES = [
-    { id: 'r1', type: 'time-avoid', from: '09:00', to: '10:00', text: "don't trade between 9 and 10" },
-    { id: 'r2', type: 'time-prefer', from: '11:00', to: '13:00', text: 'ideal trade window: 11 to 1' },
-    { id: 'r3', type: 'alignment', text: '1h and 4h must align' },
+    { id: 'r1', text: "don't trade between 9 and 10", severity: 'hard' },
+    { id: 'r2', text: 'ideal trade window 11 to 1', severity: 'soft' },
+    { id: 'r3', text: '1h and 4h must align', severity: 'hard' },
   ];
 
   // ─── STATE ──────────────────────────────────────────────────
-  const STORAGE_KEY = 'trade-checklist-v4';
+  const STORAGE_KEY = 'trade-checklist-v5';
   function loadState() {
     try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
     catch (e) { return {}; }
@@ -1065,11 +1197,39 @@
     }
   }
   let state = loadState();
+  // Migrate from v4 if v5 is empty
+  if (!state.rules && !state.markets) {
+    try {
+      const oldRaw = localStorage.getItem('trade-checklist-v4');
+      if (oldRaw) {
+        const old = JSON.parse(oldRaw);
+        if (old) {
+          state = old;
+          // Rewrite rules into the new schema (strip type/from/to, add severity)
+          if (Array.isArray(state.rules)) {
+            state.rules = state.rules.map(r => {
+              let text = r.text || '';
+              // If old rule had explicit time window but text didn't mention it, inject it
+              if ((r.type === 'time-avoid' || r.type === 'time-prefer') && r.from && r.to) {
+                if (!/\d/.test(text)) {
+                  text = `${text} ${r.from} to ${r.to}`.trim();
+                }
+              }
+              let severity = 'soft';
+              if (r.type === 'time-avoid' || r.type === 'alignment') severity = 'hard';
+              return { id: r.id, text, severity };
+            });
+          }
+        }
+      }
+    } catch (e) { console.warn('v4 migration failed', e); }
+  }
   if (!state.markets) state.markets = {};
   if (!state.selected) state.selected = null;
   if (!state.dateOverride) state.dateOverride = null;
   if (!state.rules) state.rules = DEFAULT_RULES.slice();
   if (!state.manualChecks) state.manualChecks = {};
+  saveState();
 
   function getActiveDate() {
     if (state.dateOverride) {
@@ -1132,76 +1292,131 @@
   }
 
   // ─── RULES ──────────────────────────────────────────────────
-  function parseTimeStr(s) {
-    if (!s) return null;
-    s = s.trim().toLowerCase();
-    let h, m = 0, pm = false, am = false;
-    if (s.endsWith('pm')) { pm = true; s = s.slice(0, -2).trim(); }
-    else if (s.endsWith('am')) { am = true; s = s.slice(0, -2).trim(); }
-    if (s.includes(':')) {
-      const [hh, mm] = s.split(':');
-      h = parseInt(hh, 10);
-      m = parseInt(mm, 10) || 0;
-    } else {
-      h = parseInt(s, 10);
-    }
-    if (isNaN(h)) return null;
-    if (pm && h < 12) h += 12;
-    if (am && h === 12) h = 0;
-    return h * 60 + m;
+  function nowMinutes() {
+    const d = new Date();
+    return d.getHours() * 60 + d.getMinutes();
   }
   function formatTimeMin(min) {
     const h = Math.floor(min / 60);
     const m = min % 60;
     return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
   }
-  function nowMinutes() {
-    const d = new Date();
-    return d.getHours() * 60 + d.getMinutes();
+
+  // Parse natural text for rule semantics.
+  // Returns { kind, ... } where kind is 'time-avoid', 'time-prefer', 'alignment', or 'manual'.
+  function parseRuleText(text) {
+    const t = text.toLowerCase();
+
+    // Alignment detection
+    if (/\balign(ed|ment|s)?\b/.test(t) ||
+        /\b(1h|h1|1-?hour)\b.*\b(4h|h4|4-?hour)\b/.test(t) ||
+        /\b(4h|h4|4-?hour)\b.*\b(1h|h1|1-?hour)\b/.test(t)) {
+      return { kind: 'alignment' };
+    }
+
+    // Time window detection.
+    // Look for patterns like "9-10", "9 to 10", "9am to 10am", "11:30-1", "11 to 1"
+    // Convert found times to minutes.
+    const timeRegex = /(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/gi;
+    const matches = [...t.matchAll(timeRegex)];
+    // Filter out obvious non-time numbers (like "4h", "1h" references)
+    const timeMatches = matches.filter(m => {
+      const rest = t.slice(m.index + m[0].length, m.index + m[0].length + 1);
+      return rest !== 'h'; // skip "4h", "1h"
+    });
+
+    if (timeMatches.length >= 2) {
+      // Take first two as a window
+      const toMinutes = (match) => {
+        let h = parseInt(match[1], 10);
+        const mm = match[2] ? parseInt(match[2], 10) : 0;
+        const ampm = match[3];
+        if (ampm === 'pm' && h < 12) h += 12;
+        if (ampm === 'am' && h === 12) h = 0;
+        return h * 60 + mm;
+      };
+      let from = toMinutes(timeMatches[0]);
+      let to = toMinutes(timeMatches[1]);
+
+      // Heuristic: if neither has am/pm and "to" wraps to a small hour (1-7),
+      // assume pm rollover. "11 to 1" → 11:00 and 13:00.
+      const toHour = parseInt(timeMatches[1][1], 10);
+      if (!timeMatches[0][3] && !timeMatches[1][3] && to < from && toHour >= 1 && toHour <= 7) {
+        to += 12 * 60;
+      }
+
+      // avoid vs prefer
+      const isAvoid = /\b(avoid|don'?t|do not|no trading|not? during|never)\b/.test(t);
+      const isPrefer = /\b(ideal|prefer|best|sweet spot|only trade|window)\b/.test(t) && !isAvoid;
+
+      if (isAvoid) return { kind: 'time-avoid', from, to };
+      if (isPrefer) return { kind: 'time-prefer', from, to };
+      // Default to avoid if the text has "don't" or negation fallback, otherwise prefer
+      return { kind: 'time-prefer', from, to };
+    }
+
+    return { kind: 'manual' };
   }
 
   function evalRule(rule, marketState) {
-    if (rule.type === 'time-avoid') {
-      const f = parseTimeStr(rule.from), t = parseTimeStr(rule.to);
-      if (f === null || t === null) return { status: 'unknown', label: 'invalid time' };
+    const parsed = parseRuleText(rule.text);
+
+    if (parsed.kind === 'time-avoid') {
       const now = nowMinutes();
-      const inWindow = now >= f && now <= t;
+      const inWindow = now >= parsed.from && now <= parsed.to;
       return inWindow
-        ? { status: 'fail', label: `currently inside avoid window (${formatTimeMin(now)})` }
-        : { status: 'pass', label: `outside avoid window (${formatTimeMin(now)})` };
+        ? { status: 'fail', label: `inside avoid window · now ${formatTimeMin(now)}`, kind: parsed.kind }
+        : { status: 'pass', label: `clear of avoid window · now ${formatTimeMin(now)}`, kind: parsed.kind };
     }
-    if (rule.type === 'time-prefer') {
-      const f = parseTimeStr(rule.from), t = parseTimeStr(rule.to);
-      if (f === null || t === null) return { status: 'unknown', label: 'invalid time' };
+    if (parsed.kind === 'time-prefer') {
       const now = nowMinutes();
-      const inWindow = now >= f && now <= t;
-      return inWindow
-        ? { status: 'pass', label: `inside ideal window (${formatTimeMin(now)})` }
-        : { status: 'warn', label: `outside ideal window (${formatTimeMin(now)})` };
+      const inWindow = now >= parsed.from && now <= parsed.to;
+      if (inWindow) return { status: 'pass', label: `inside ideal window · now ${formatTimeMin(now)}`, kind: parsed.kind };
+      // Not in window — compute countdown
+      let mins = parsed.from - now;
+      if (mins < 0) mins += 24 * 60;
+      const h = Math.floor(mins / 60), m = mins % 60;
+      const countdown = h > 0 ? `${h}h ${m}m` : `${m}m`;
+      return { status: 'warn', label: `opens in ${countdown} · at ${formatTimeMin(parsed.from)}`, kind: parsed.kind };
     }
-    if (rule.type === 'alignment') {
-      if (!marketState) return { status: 'unknown', label: 'pick a market' };
-      const { daily, h4, h1 } = marketState;
-      if (!h4 || !h1) return { status: 'unknown', label: 'set 1h and 4h trends' };
-      if (h4 === h1) return { status: 'pass', label: `${h4} aligned` };
-      return { status: 'fail', label: `1h is ${h1}, 4h is ${h4}` };
+    if (parsed.kind === 'alignment') {
+      if (!marketState) return { status: 'unknown', label: 'pick a market to evaluate', kind: parsed.kind };
+      const { h4, h1 } = marketState;
+      if (!h4 || !h1) return { status: 'unknown', label: 'set 1h and 4h trends', kind: parsed.kind };
+      if (h4 === h1) return { status: 'pass', label: `${h4} aligned`, kind: parsed.kind };
+      return { status: 'fail', label: `1h is ${h1}, 4h is ${h4}`, kind: parsed.kind };
     }
-    if (rule.type === 'manual') {
-      const checked = !!state.manualChecks[rule.id];
-      return { status: checked ? 'pass' : 'manual', label: checked ? 'checked' : 'tap to mark done', manual: true };
-    }
-    return { status: 'unknown', label: '' };
+    // Manual
+    const checked = !!state.manualChecks[rule.id];
+    return {
+      status: checked ? 'pass' : 'manual',
+      label: checked ? 'checked off' : 'tap ○ to check',
+      manual: true,
+      kind: 'manual',
+    };
+  }
+
+  function kindIcon(kind) {
+    if (kind === 'time-avoid' || kind === 'time-prefer') return '⏱';
+    if (kind === 'alignment') return '⇅';
+    return '☐';
   }
 
   function renderRules() {
-    const list = document.getElementById('rules-list');
-    list.innerHTML = '';
+    const grid = document.getElementById('rules-grid');
+    grid.innerHTML = '';
     const ms = state.selected ? getMarketState(state.selected) : null;
 
     state.rules.forEach(rule => {
+      if (!rule.severity) rule.severity = 'soft';
       const result = evalRule(rule, ms);
-      const item = document.createElement('div');
-      item.className = 'rule-item';
+      const card = document.createElement('div');
+      let cls = 'rule-card ' + rule.severity;
+      if (result.status === 'pass') cls += ' pass';
+      else if (result.status === 'fail') cls += ' fail';
+      else if (result.status === 'warn') cls += ' warn';
+      card.className = cls;
+
       let icon = '○';
       if (result.status === 'pass') icon = '✓';
       else if (result.status === 'fail') icon = '✕';
@@ -1212,85 +1427,183 @@
         ? 'manual' + (state.manualChecks[rule.id] ? ' checked' : '')
         : result.status;
 
-      item.innerHTML = `
+      card.innerHTML = `
         <div class="rule-status ${statusCls}" data-rule="${rule.id}">${icon}</div>
         <div class="rule-body">
-          <div class="rule-text">${escapeHtml(rule.text)}</div>
-          <div class="rule-meta">${escapeHtml(result.label)}</div>
+          <div class="rule-text" contenteditable="true" spellcheck="false" data-rule="${rule.id}">${escapeHtml(rule.text)}</div>
+          <div class="rule-meta">
+            <span class="rule-type-icon" title="${result.kind || ''}">${kindIcon(result.kind)}</span>
+            <span>${escapeHtml(result.label)}</span>
+            <span class="rule-severity ${rule.severity}" data-sev="${rule.id}">${rule.severity}</span>
+          </div>
         </div>
         <button class="rule-delete" data-del="${rule.id}" title="delete rule">×</button>
       `;
-      list.appendChild(item);
+      grid.appendChild(card);
     });
 
-    // Bind manual checks
-    list.querySelectorAll('.rule-status.manual').forEach(el => {
+    // Add-card
+    const addCard = document.createElement('div');
+    addCard.className = 'rule-add';
+    addCard.textContent = '+ add a rule';
+    addCard.addEventListener('click', () => {
+      const newRule = { id: 'r' + Date.now(), text: '', severity: 'soft' };
+      state.rules.push(newRule);
+      saveState();
+      renderRules();
+      // Focus the new editable
+      setTimeout(() => {
+        const el = document.querySelector(`.rule-text[data-rule="${newRule.id}"]`);
+        if (el) {
+          el.focus();
+          // Select contents
+          const r = document.createRange();
+          r.selectNodeContents(el);
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(r);
+        }
+      }, 10);
+    });
+    grid.appendChild(addCard);
+
+    // Wire up inline editing
+    grid.querySelectorAll('.rule-text[contenteditable]').forEach(el => {
+      el.addEventListener('blur', () => {
+        const id = el.dataset.rule;
+        const rule = state.rules.find(r => r.id === id);
+        if (!rule) return;
+        const newText = el.textContent.trim();
+        if (!newText) {
+          // empty → delete
+          state.rules = state.rules.filter(r => r.id !== id);
+          delete state.manualChecks[id];
+        } else if (newText !== rule.text) {
+          rule.text = newText;
+        }
+        saveState();
+        renderRules();
+        renderVerdict();
+      });
+      el.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          el.blur();
+        }
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          const rule = state.rules.find(r => r.id === el.dataset.rule);
+          if (rule) el.textContent = rule.text;
+          el.blur();
+        }
+      });
+    });
+
+    // Manual checks
+    grid.querySelectorAll('.rule-status.manual').forEach(el => {
       el.addEventListener('click', () => {
         const id = el.dataset.rule;
         state.manualChecks[id] = !state.manualChecks[id];
         saveState();
         renderRules();
+        renderVerdict();
       });
     });
-    // Bind delete
-    list.querySelectorAll('[data-del]').forEach(btn => {
-      btn.addEventListener('click', () => {
+
+    // Severity toggle
+    grid.querySelectorAll('.rule-severity').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = el.dataset.sev;
+        const rule = state.rules.find(r => r.id === id);
+        if (!rule) return;
+        rule.severity = rule.severity === 'hard' ? 'soft' : 'hard';
+        saveState();
+        renderRules();
+        renderVerdict();
+      });
+    });
+
+    // Delete
+    grid.querySelectorAll('[data-del]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
         const id = btn.dataset.del;
         if (!confirm('delete this rule?')) return;
         state.rules = state.rules.filter(r => r.id !== id);
         delete state.manualChecks[id];
         saveState();
         renderRules();
+        renderVerdict();
       });
     });
   }
 
-  // Add-rule form
-  function setupRuleForm() {
-    const form = document.getElementById('rule-add-form');
-    const typeSel = document.getElementById('rule-type');
-    const fromIn = document.getElementById('rule-from');
-    const toIn = document.getElementById('rule-to');
-    const textIn = document.getElementById('rule-text');
+  // ─── VERDICT ────────────────────────────────────────────────
+  function computeVerdict() {
+    const ms = state.selected ? getMarketState(state.selected) : null;
+    let hardFail = 0, softFail = 0, pass = 0, warn = 0, unknown = 0;
 
-    function updateFormVisibility() {
-      const t = typeSel.value;
-      const showTimes = (t === 'time-avoid' || t === 'time-prefer');
-      fromIn.style.display = showTimes ? '' : 'none';
-      toIn.style.display = showTimes ? '' : 'none';
-    }
-    typeSel.addEventListener('change', updateFormVisibility);
-    updateFormVisibility();
-
-    document.getElementById('add-rule-btn').addEventListener('click', () => {
-      form.classList.toggle('active');
-    });
-    document.getElementById('rule-cancel').addEventListener('click', () => {
-      form.classList.remove('active');
-      fromIn.value = ''; toIn.value = ''; textIn.value = '';
-    });
-    document.getElementById('rule-save').addEventListener('click', () => {
-      const text = textIn.value.trim();
-      if (!text) { alert('add a description'); return; }
-      const rule = {
-        id: 'r' + Date.now(),
-        type: typeSel.value,
-        text,
-      };
-      if (rule.type === 'time-avoid' || rule.type === 'time-prefer') {
-        rule.from = fromIn.value.trim();
-        rule.to = toIn.value.trim();
-        if (parseTimeStr(rule.from) === null || parseTimeStr(rule.to) === null) {
-          alert('invalid time format. use 9:00, 9am, 14:30, etc.');
-          return;
-        }
+    state.rules.forEach(rule => {
+      const sev = rule.severity || 'soft';
+      const result = evalRule(rule, ms);
+      if (result.status === 'pass') pass++;
+      else if (result.status === 'fail') {
+        if (sev === 'hard') hardFail++;
+        else softFail++;
       }
-      state.rules.push(rule);
-      saveState();
-      renderRules();
-      form.classList.remove('active');
-      fromIn.value = ''; toIn.value = ''; textIn.value = '';
+      else if (result.status === 'warn') warn++;
+      else if (result.manual && !state.manualChecks[rule.id]) {
+        // untouched manual rules → treat as unknown
+        unknown++;
+      }
+      else unknown++;
     });
+
+    let state_ = 'go';
+    let text = 'GO';
+    let sub = 'all clear — you can take the trade';
+
+    if (state.rules.length === 0) {
+      state_ = '';
+      text = '—';
+      sub = 'add your first rule to begin';
+    } else if (hardFail > 0) {
+      state_ = 'stop';
+      text = 'DO NOT TRADE';
+      sub = hardFail === 1 ? 'a hard rule is failing' : `${hardFail} hard rules are failing`;
+    } else if (softFail > 0 || warn > 0 || unknown > 0) {
+      state_ = 'caution';
+      text = 'CAUTION';
+      const bits = [];
+      if (softFail > 0) bits.push(`${softFail} soft rule${softFail>1?'s':''} failing`);
+      if (warn > 0) bits.push(`${warn} warning${warn>1?'s':''}`);
+      if (unknown > 0) bits.push(`${unknown} pending`);
+      sub = bits.join(' · ');
+    }
+
+    return { state: state_, text, sub, pass, hardFail, softFail, warn, unknown };
+  }
+
+  function renderVerdict() {
+    const v = computeVerdict();
+    const banner = document.getElementById('verdict');
+    banner.className = 'verdict' + (v.state ? ' ' + v.state : '');
+    document.getElementById('verdict-text').textContent = v.text;
+    document.getElementById('verdict-sub').textContent = v.sub;
+
+    const counts = document.getElementById('verdict-counts');
+    if (state.rules.length === 0) {
+      counts.innerHTML = '';
+    } else {
+      counts.innerHTML = `
+        <span class="passing"><strong>${v.pass}</strong> passing</span>
+        ${v.hardFail > 0 ? `<span class="failing"><strong>${v.hardFail}</strong> hard failing</span>` : ''}
+        ${v.softFail > 0 ? `<span class="failing"><strong>${v.softFail}</strong> soft failing</span>` : ''}
+        ${v.warn > 0 ? `<span class="warning"><strong>${v.warn}</strong> warning</span>` : ''}
+        ${v.unknown > 0 ? `<span><strong>${v.unknown}</strong> pending</span>` : ''}
+      `;
+    }
   }
 
   // ─── TRADE PANEL ────────────────────────────────────────────
@@ -1334,6 +1647,7 @@
     renderShots(ms);
     renderAlignment(ms);
     renderRules();
+    renderVerdict();
   }
 
   function renderAlignment(ms) {
@@ -1825,14 +2139,13 @@
   }
 
   // ─── INIT ───────────────────────────────────────────────────
-  function renderAll() { renderReading(); renderMarkets(); renderRules(); renderTradePanel(); }
-  setupRuleForm();
+  function renderAll() { renderReading(); renderMarkets(); renderRules(); renderTradePanel(); renderVerdict(); }
   setupDragDrop();
   initDateInput();
   renderAll();
 
   // Refresh time-based rules every 30s
-  setInterval(renderRules, 30000);
+  setInterval(() => { renderRules(); renderVerdict(); }, 30000);
 </script>
 </body>
 </html>
