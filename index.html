@@ -4,26 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Trade Checklist</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230e0e10'/%3E%3Cpolyline points='5,24 11,18 15,21 20,12 26,7' fill='none' stroke='%23d4f264' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpolyline points='22,7 26,7 26,11' fill='none' stroke='%23d4f264' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23ebe3d2'/%3E%3Cpolyline points='5,24 11,18 15,21 20,12 26,7' fill='none' stroke='%236b8a2a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpolyline points='22,7 26,7 26,11' fill='none' stroke='%236b8a2a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,wght@0,300;0,700;1,300&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #0e0e10;
-    --surface: #17171a;
-    --surface2: #1f1f24;
-    --border: #2e2e36;
-    --accent: #d4f264;
-    --accent2: #6af2b0;
-    --text: #e8e8ec;
-    --muted: #6b6b7a;
-    --red: #ff5c5c;
-    --up: #6af2b0;
-    --down: #ff5c5c;
-    --flat: #6b6b7a;
-    --warn: #f2c76a;
+    --bg: #ebe3d2;
+    --surface: #f1ebdc;
+    --surface2: #e2d9c2;
+    --border: #c8bea3;
+    --accent: #6b8a2a;
+    --accent2: #2d6b4f;
+    --text: #2a2620;
+    --muted: #7a7060;
+    --red: #b8412e;
+    --up: #2d6b4f;
+    --down: #b8412e;
+    --flat: #7a7060;
+    --warn: #b8782e;
   }
 
   body {
@@ -38,8 +38,8 @@
     position: fixed;
     inset: 0;
     background-image:
-      linear-gradient(rgba(212,242,100,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(212,242,100,0.03) 1px, transparent 1px);
+      linear-gradient(rgba(107,138,42,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(107,138,42,0.04) 1px, transparent 1px);
     background-size: 40px 40px;
     pointer-events: none;
     z-index: 0;
@@ -314,6 +314,7 @@
     overflow: hidden;
     animation: fadeUp 0.4s ease both;
     background: var(--surface);
+    text-align: center;
   }
   .verdict::before {
     content: '';
@@ -324,18 +325,18 @@
     transition: background 0.3s;
   }
   .verdict.go {
-    background: linear-gradient(135deg, var(--surface) 0%, rgba(106,242,176,0.08) 100%);
-    border-color: rgba(106,242,176,0.4);
+    background: linear-gradient(135deg, var(--surface) 0%, rgba(45,107,79,0.1) 100%);
+    border-color: rgba(45,107,79,0.4);
   }
   .verdict.go::before { background: var(--up); }
   .verdict.caution {
-    background: linear-gradient(135deg, var(--surface) 0%, rgba(242,199,106,0.08) 100%);
-    border-color: rgba(242,199,106,0.4);
+    background: linear-gradient(135deg, var(--surface) 0%, rgba(184,120,46,0.1) 100%);
+    border-color: rgba(184,120,46,0.4);
   }
   .verdict.caution::before { background: var(--warn); }
   .verdict.stop {
-    background: linear-gradient(135deg, var(--surface) 0%, rgba(255,92,92,0.08) 100%);
-    border-color: rgba(255,92,92,0.5);
+    background: linear-gradient(135deg, var(--surface) 0%, rgba(184,65,46,0.1) 100%);
+    border-color: rgba(184,65,46,0.5);
   }
   .verdict.stop::before { background: var(--down); }
 
@@ -376,6 +377,8 @@
     font-size: 0.7rem;
     color: var(--muted);
     letter-spacing: 0.06em;
+    justify-content: center;
+    flex-wrap: wrap;
   }
   .verdict-counts span strong {
     color: var(--text);
@@ -389,15 +392,16 @@
     .verdict { padding: 24px 22px; }
     .verdict-text { font-size: 2.8rem; }
     .verdict-sub { font-size: 1.05rem; }
-    .verdict-counts { flex-wrap: wrap; gap: 12px 20px; }
+    .verdict-counts { gap: 12px 20px; }
   }
 
   /* ── RULES ── */
   .rules-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 12px;
-    margin-bottom: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0 auto 14px;
+    max-width: 640px;
   }
 
   .rule-card {
@@ -409,11 +413,42 @@
     display: flex;
     gap: 16px;
     align-items: flex-start;
-    transition: background 0.12s, border-color 0.15s;
+    transition: background 0.12s, border-color 0.15s, opacity 0.15s, transform 0.15s;
     animation: fadeUp 0.3s ease both;
     min-height: 110px;
   }
   .rule-card:hover { background: var(--surface2); }
+
+  /* drag states */
+  .rule-card.dragging {
+    opacity: 0.4;
+  }
+  .rule-card.drag-over {
+    border-top: 2px solid var(--accent);
+  }
+
+  /* drag handle — appears on hover, left of status */
+  .rule-drag {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 6px 2px;
+    cursor: grab;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity 0.15s;
+    align-self: center;
+    margin-left: -8px;
+  }
+  .rule-drag span {
+    display: block;
+    width: 14px;
+    height: 1.5px;
+    background: var(--muted);
+    border-radius: 2px;
+  }
+  .rule-card:hover .rule-drag { opacity: 1; }
+  .rule-drag:active { cursor: grabbing; }
 
   /* severity edge — left stripe */
   .rule-card::before {
@@ -428,9 +463,9 @@
   .rule-card.hard::before { background: var(--down); }
   .rule-card.soft::before { background: var(--warn); }
 
-  .rule-card.pass { border-color: rgba(106,242,176,0.35); }
-  .rule-card.fail { border-color: rgba(255,92,92,0.5); background: linear-gradient(135deg, var(--surface) 0%, rgba(255,92,92,0.04) 100%); }
-  .rule-card.warn { border-color: rgba(242,199,106,0.35); }
+  .rule-card.pass { border-color: rgba(45,107,79,0.4); }
+  .rule-card.fail { border-color: rgba(184,65,46,0.5); background: linear-gradient(135deg, var(--surface) 0%, rgba(184,65,46,0.05) 100%); }
+  .rule-card.warn { border-color: rgba(184,120,46,0.4); }
 
   .rule-status {
     width: 36px;
@@ -446,12 +481,12 @@
     background: var(--surface2);
     color: var(--muted);
   }
-  .rule-status.pass { background: rgba(106,242,176,0.14); border-color: var(--up); color: var(--up); }
-  .rule-status.fail { background: rgba(255,92,92,0.14); border-color: var(--down); color: var(--down); }
-  .rule-status.warn { background: rgba(242,199,106,0.14); border-color: var(--warn); color: var(--warn); }
+  .rule-status.pass { background: rgba(45,107,79,0.15); border-color: var(--up); color: var(--up); }
+  .rule-status.fail { background: rgba(184,65,46,0.15); border-color: var(--down); color: var(--down); }
+  .rule-status.warn { background: rgba(184,120,46,0.15); border-color: var(--warn); color: var(--warn); }
   .rule-status.manual { cursor: pointer; transition: all 0.15s; }
   .rule-status.manual:hover { border-color: var(--accent); color: var(--accent); }
-  .rule-status.manual.checked { background: rgba(106,242,176,0.14); border-color: var(--up); color: var(--up); }
+  .rule-status.manual.checked { background: rgba(45,107,79,0.15); border-color: var(--up); color: var(--up); }
 
   .rule-body { flex: 1; min-width: 0; }
 
@@ -468,9 +503,10 @@
     margin: -2px -4px;
     transition: background 0.12s;
     word-wrap: break-word;
+    -webkit-user-drag: none;
   }
-  .rule-text:hover { background: rgba(255,255,255,0.03); }
-  .rule-text:focus { background: rgba(212,242,100,0.06); }
+  .rule-text:hover { background: rgba(0,0,0,0.025); }
+  .rule-text:focus { background: rgba(107,138,42,0.08); }
   .rule-text:empty::before {
     content: 'type your rule…';
     color: var(--muted);
@@ -1388,6 +1424,8 @@
       else if (result.status === 'fail') cls += ' fail';
       else if (result.status === 'warn') cls += ' warn';
       card.className = cls;
+      card.draggable = true;
+      card.dataset.ruleId = rule.id;
 
       let icon = '○';
       if (result.status === 'pass') icon = '✓';
@@ -1400,6 +1438,7 @@
         : result.status;
 
       card.innerHTML = `
+        <div class="rule-drag" title="drag to reorder"><span></span><span></span><span></span></div>
         <div class="rule-status ${statusCls}" data-rule="${rule.id}">${icon}</div>
         <div class="rule-body">
           <div class="rule-text" contenteditable="true" spellcheck="false" data-rule="${rule.id}">${escapeHtml(rule.text)}</div>
@@ -1507,6 +1546,52 @@
         saveState();
         renderRules();
         renderVerdict();
+      });
+    });
+
+    // Drag & drop reordering
+    let dragSrcId = null;
+    grid.querySelectorAll('.rule-card').forEach(card => {
+      card.addEventListener('dragstart', (e) => {
+        // Don't initiate drag if user is editing text
+        if (document.activeElement && document.activeElement.classList.contains('rule-text')) {
+          e.preventDefault();
+          return;
+        }
+        dragSrcId = card.dataset.ruleId;
+        card.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        try { e.dataTransfer.setData('text/plain', dragSrcId); } catch (err) {}
+      });
+      card.addEventListener('dragend', () => {
+        dragSrcId = null;
+        grid.querySelectorAll('.rule-card').forEach(c => {
+          c.classList.remove('dragging', 'drag-over');
+        });
+      });
+      card.addEventListener('dragenter', (e) => {
+        e.preventDefault();
+        if (card.dataset.ruleId !== dragSrcId) card.classList.add('drag-over');
+      });
+      card.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+      });
+      card.addEventListener('dragleave', () => {
+        card.classList.remove('drag-over');
+      });
+      card.addEventListener('drop', (e) => {
+        e.preventDefault();
+        card.classList.remove('drag-over');
+        const targetId = card.dataset.ruleId;
+        if (!dragSrcId || dragSrcId === targetId) return;
+        const srcIdx = state.rules.findIndex(r => r.id === dragSrcId);
+        const tgtIdx = state.rules.findIndex(r => r.id === targetId);
+        if (srcIdx === -1 || tgtIdx === -1) return;
+        const [moved] = state.rules.splice(srcIdx, 1);
+        state.rules.splice(tgtIdx, 0, moved);
+        saveState();
+        renderRules();
       });
     });
   }
