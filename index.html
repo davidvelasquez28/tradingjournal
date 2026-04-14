@@ -708,21 +708,6 @@
     color: var(--text);
     flex: 1;
   }
-  .tp-export {
-    background: transparent;
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    font-family: 'DM Mono', monospace;
-    font-size: 0.68rem;
-    letter-spacing: 0.06em;
-    padding: 7px 14px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.15s;
-    text-transform: uppercase;
-  }
-  .tp-export:hover { background: var(--accent); color: #fff; }
-  .tp-export:disabled { opacity: 0.5; cursor: wait; }
 
   .tp-stats {
     display: grid;
@@ -832,18 +817,151 @@
   .tf-btn.active.down { background: rgba(168,50,50,0.14); border-color: var(--down); color: var(--text); }
   .tf-btn.active.flat { background: var(--surface); border-color: var(--muted); color: var(--text); }
 
-  .notes-section { padding: 22px; }
+  .journal-section, .notes-section { padding: 22px; }
   .notes-label {
     font-size: 0.6rem;
     color: var(--muted);
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    margin-bottom: 10px;
   }
-  .notes-area {
+
+  .journal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    gap: 12px;
+  }
+  .journal-actions {
+    display: flex;
+    gap: 8px;
+  }
+  .btn-journal-new {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    padding: 7px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    letter-spacing: 0.04em;
+  }
+  .btn-journal-new:hover { opacity: 0.85; }
+  .btn-journal-export {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    padding: 7px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.04em;
+  }
+  .btn-journal-export:hover { background: var(--accent); color: #fff; }
+  .btn-journal-export:disabled { opacity: 0.5; cursor: wait; }
+
+  .journal-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .journal-list:empty::before {
+    content: 'no entries yet — click "new entry" to start';
+    display: block;
+    text-align: center;
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    color: var(--muted);
+    padding: 30px;
+    font-size: 1.1rem;
+  }
+
+  .entry {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+    animation: fadeUp 0.2s ease both;
+  }
+  .entry.editing { border-color: var(--accent); }
+
+  .entry-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .entry:not(.editing) .entry-head:hover { background: var(--surface); }
+
+  .entry-timestamp {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+  }
+  .entry-preview {
+    flex: 1;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+  .entry.expanded .entry-preview { display: none; }
+
+  .entry-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--muted);
+    flex-shrink: 0;
+    letter-spacing: 0.04em;
+  }
+
+  .entry-caret {
+    color: var(--muted);
+    font-size: 0.75rem;
+    flex-shrink: 0;
+    transition: transform 0.15s;
+  }
+  .entry.expanded .entry-caret { transform: rotate(90deg); }
+
+  .entry-body {
+    display: none;
+    padding: 0 16px 16px;
+    border-top: 1px solid var(--border);
+  }
+  .entry.expanded .entry-body { display: block; }
+
+  .entry-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82rem;
+    color: var(--text);
+    line-height: 1.65;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    padding: 14px 0;
+  }
+  .entry-text:empty::before {
+    content: '(no text)';
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .entry-textarea {
     width: 100%;
     min-height: 120px;
-    background: var(--surface2);
+    background: var(--surface);
     border: 1px solid var(--border);
     color: var(--text);
     font-family: 'DM Mono', monospace;
@@ -853,23 +971,60 @@
     border-radius: 6px;
     resize: vertical;
     outline: none;
+    margin-top: 14px;
     transition: border-color 0.2s;
   }
-  .notes-area::placeholder { color: var(--muted); }
-  .notes-area:focus { border-color: var(--accent2); }
-  .notes-area.drag-over {
+  .entry-textarea::placeholder { color: var(--muted); }
+  .entry-textarea:focus { border-color: var(--accent); }
+  .entry-textarea.drag-over {
     border-color: var(--accent);
     background: rgba(10,77,82,0.06);
   }
 
-  .screenshots {
+  .entry-drop-hint {
+    font-size: 0.62rem;
+    color: var(--muted);
+    margin-top: 6px;
+    font-style: italic;
+  }
+
+  .entry-shots {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 14px;
-    min-height: 0;
+    gap: 8px;
+    margin-top: 12px;
   }
-  .screenshots:empty { display: none; }
+  .entry-shots:empty { display: none; }
+
+  .entry-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+  .btn-entry {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.04em;
+  }
+  .btn-entry:hover { color: var(--text); border-color: var(--muted); }
+  .btn-entry.primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .btn-entry.primary:hover { opacity: 0.85; color: #fff; }
+  .btn-entry.danger:hover { color: var(--red); border-color: var(--red); }
+
   .shot {
     position: relative;
     width: 130px;
@@ -878,7 +1033,7 @@
     overflow: hidden;
     border: 1px solid var(--border);
     cursor: pointer;
-    background: var(--surface2);
+    background: var(--surface);
     animation: fadeUp 0.2s ease both;
   }
   .shot img {
@@ -895,8 +1050,8 @@
     width: 22px;
     height: 22px;
     border-radius: 4px;
-    background: rgba(14,14,16,0.85);
-    color: var(--text);
+    background: rgba(30,45,48,0.85);
+    color: #fff;
     border: none;
     font-size: 0.85rem;
     cursor: pointer;
@@ -908,14 +1063,7 @@
     line-height: 1;
   }
   .shot:hover .shot-delete { opacity: 1; }
-  .shot-delete:hover { color: var(--red); }
-
-  .drop-hint {
-    font-size: 0.65rem;
-    color: var(--muted);
-    margin-top: 8px;
-    font-style: italic;
-  }
+  .shot-delete:hover { color: #ff9b9b; }
 
   .notes-footer {
     display: flex;
@@ -924,7 +1072,7 @@
     margin-top: 12px;
   }
   .save-confirm { font-size: 0.68rem; color: var(--muted); letter-spacing: 0.08em; }
-  .save-confirm.saved { color: var(--accent2); }
+  .save-confirm.saved { color: var(--up); }
   .btn-clear {
     background: transparent;
     border: 1px solid var(--border);
@@ -1093,7 +1241,6 @@
         <div class="tp-head">
           <span class="tp-badge">live</span>
           <span class="tp-title" id="tp-title">—</span>
-          <button class="tp-export" id="tp-export">export pdf</button>
         </div>
 
         <div class="tp-stats" id="tp-stats"></div>
@@ -1131,13 +1278,17 @@
           </div>
         </div>
 
-        <div class="notes-section">
-          <div class="notes-label">notes</div>
-          <textarea class="notes-area" id="notes" placeholder="entry, stop, target. thesis. feel. drop screenshots in here…"></textarea>
-          <div class="drop-hint">drag and drop chart screenshots anywhere in the notes box</div>
-          <div class="screenshots" id="screenshots"></div>
+        <div class="journal-section">
+          <div class="journal-head">
+            <div class="notes-label">journal</div>
+            <div class="journal-actions">
+              <button class="btn-journal-new" id="journal-new">+ new entry</button>
+              <button class="btn-journal-export" id="journal-export">export journal</button>
+            </div>
+          </div>
+          <div class="journal-list" id="journal-list"></div>
           <div class="notes-footer">
-            <span class="save-confirm" id="save-confirm">auto-saves</span>
+            <span class="save-confirm" id="save-confirm"></span>
             <button class="btn-clear" id="btn-clear">clear this market</button>
           </div>
         </div>
@@ -1684,13 +1835,88 @@
     }
   }
 
+  // ─── INDEXEDDB for screenshots ─────────────────────────────
+  const IDB_NAME = 'trade-checklist-db';
+  const IDB_STORE = 'shots';
+  let _idb = null;
+  function openDb() {
+    if (_idb) return Promise.resolve(_idb);
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(IDB_NAME, 1);
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE);
+      };
+      req.onsuccess = () => { _idb = req.result; resolve(_idb); };
+      req.onerror = () => reject(req.error);
+    });
+  }
+  async function idbPut(key, value) {
+    const db = await openDb();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(IDB_STORE, 'readwrite');
+      tx.objectStore(IDB_STORE).put(value, key);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+  async function idbGet(key) {
+    const db = await openDb();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(IDB_STORE, 'readonly');
+      const req = tx.objectStore(IDB_STORE).get(key);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+  async function idbDel(key) {
+    const db = await openDb();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(IDB_STORE, 'readwrite');
+      tx.objectStore(IDB_STORE).delete(key);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+  // Simple in-memory cache so we don't re-fetch the same shot every render
+  const shotCache = new Map();
+  async function getShot(id) {
+    if (shotCache.has(id)) return shotCache.get(id);
+    const data = await idbGet(id);
+    if (data) shotCache.set(id, data);
+    return data;
+  }
+
   // ─── TRADE PANEL ────────────────────────────────────────────
   function getMarketState(symbol) {
     if (!state.markets[symbol]) {
-      state.markets[symbol] = { daily: null, h4: null, h1: null, notes: '', shots: [] };
+      state.markets[symbol] = { daily: null, h4: null, h1: null, journal: [] };
     }
-    if (!state.markets[symbol].shots) state.markets[symbol].shots = [];
-    return state.markets[symbol];
+    const ms = state.markets[symbol];
+    if (!ms.journal) ms.journal = [];
+    // Legacy migration: if this market still has old "notes" + "shots", fold them into one journal entry
+    if ((ms.notes && ms.notes.length) || (Array.isArray(ms.shots) && ms.shots.length)) {
+      const legacy = {
+        id: 'e' + Date.now() + Math.floor(Math.random() * 1000),
+        created: Date.now(),
+        text: ms.notes || '',
+        shotIds: [],
+      };
+      // Move old inline data URLs into IDB
+      if (Array.isArray(ms.shots)) {
+        ms.shots.forEach((dataUrl, i) => {
+          const sid = `${symbol}:${legacy.id}:${i}:${Date.now()}`;
+          legacy.shotIds.push(sid);
+          idbPut(sid, dataUrl).catch(e => console.warn('migrate shot failed', e));
+          shotCache.set(sid, dataUrl);
+        });
+      }
+      ms.journal.unshift(legacy);
+      delete ms.notes;
+      delete ms.shots;
+      saveState();
+    }
+    return ms;
   }
 
   function renderTradePanel() {
@@ -1721,9 +1947,8 @@
         btn.classList.toggle('active', ms[tf] === btn.dataset.dir);
       });
     });
-    document.getElementById('notes').value = ms.notes || '';
-    renderShots(ms);
     renderAlignment(ms);
+    renderJournal(ms);
     renderRules();
     renderVerdict();
   }
@@ -1759,23 +1984,246 @@
     }
   }
 
-  // ─── SCREENSHOTS ────────────────────────────────────────────
-  function renderShots(ms) {
-    const c = document.getElementById('screenshots');
-    c.innerHTML = '';
-    ms.shots.forEach((dataUrl, idx) => {
+  // ─── JOURNAL ────────────────────────────────────────────────
+  function formatEntryDate(ts) {
+    const d = new Date(ts);
+    const mo = String(d.getMonth()+1).padStart(2,'0');
+    const da = String(d.getDate()).padStart(2,'0');
+    const yr = d.getFullYear();
+    let h = d.getHours();
+    const mi = String(d.getMinutes()).padStart(2,'0');
+    const ampm = h >= 12 ? 'pm' : 'am';
+    h = h % 12; if (h === 0) h = 12;
+    return `${mo}/${da}/${yr} ${h}:${mi}${ampm}`;
+  }
+
+  function previewText(s) {
+    if (!s) return '(empty)';
+    const firstLine = s.split('\n')[0];
+    return firstLine.length > 80 ? firstLine.slice(0, 80) + '…' : firstLine;
+  }
+
+  // State of which entries are expanded / being edited — lives outside saved state
+  const uiEntry = { expanded: new Set(), editing: new Set() };
+
+  function renderJournal(ms) {
+    const list = document.getElementById('journal-list');
+    list.innerHTML = '';
+
+    // Sort newest first by created
+    const sorted = ms.journal.slice().sort((a, b) => b.created - a.created);
+
+    sorted.forEach(entry => {
+      const card = document.createElement('div');
+      card.className = 'entry';
+      if (uiEntry.expanded.has(entry.id)) card.classList.add('expanded');
+      if (uiEntry.editing.has(entry.id)) card.classList.add('editing', 'expanded');
+
+      const shotCount = (entry.shotIds || []).length;
+      const head = document.createElement('div');
+      head.className = 'entry-head';
+      head.innerHTML = `
+        <span class="entry-timestamp">${formatEntryDate(entry.created)}</span>
+        <span class="entry-preview">${escapeHtml(previewText(entry.text))}</span>
+        <span class="entry-meta">${shotCount > 0 ? shotCount + ' img' : ''}</span>
+        <span class="entry-caret">▸</span>
+      `;
+      head.addEventListener('click', () => {
+        if (uiEntry.editing.has(entry.id)) return;
+        if (uiEntry.expanded.has(entry.id)) uiEntry.expanded.delete(entry.id);
+        else uiEntry.expanded.add(entry.id);
+        renderJournal(ms);
+      });
+      card.appendChild(head);
+
+      const body = document.createElement('div');
+      body.className = 'entry-body';
+
+      const editing = uiEntry.editing.has(entry.id);
+      if (editing) {
+        const ta = document.createElement('textarea');
+        ta.className = 'entry-textarea';
+        ta.placeholder = 'thoughts, ideas, setup, thesis…';
+        ta.value = entry.text || '';
+        body.appendChild(ta);
+
+        const hint = document.createElement('div');
+        hint.className = 'entry-drop-hint';
+        hint.textContent = 'drop screenshots into the text box above';
+        body.appendChild(hint);
+
+        // Drag/drop and paste on the textarea
+        const wireDrop = el => {
+          ['dragenter', 'dragover'].forEach(ev => {
+            el.addEventListener(ev, e => {
+              e.preventDefault(); e.stopPropagation();
+              el.classList.add('drag-over');
+            });
+          });
+          ['dragleave', 'drop'].forEach(ev => {
+            el.addEventListener(ev, e => {
+              e.preventDefault(); e.stopPropagation();
+              el.classList.remove('drag-over');
+            });
+          });
+          el.addEventListener('drop', async e => {
+            const files = Array.from(e.dataTransfer.files || []).filter(f => f.type.startsWith('image/'));
+            if (files.length) await addShotsToEntry(entry, files);
+          });
+          el.addEventListener('paste', async e => {
+            const items = e.clipboardData.items;
+            const files = [];
+            for (const item of items) {
+              if (item.type.startsWith('image/')) {
+                const f = item.getAsFile();
+                if (f) files.push(f);
+              }
+            }
+            if (files.length) { e.preventDefault(); await addShotsToEntry(entry, files); }
+          });
+        };
+        wireDrop(ta);
+
+        const shotsEl = document.createElement('div');
+        shotsEl.className = 'entry-shots';
+        body.appendChild(shotsEl);
+        renderEntryShots(entry, shotsEl, true);
+
+        const actions = document.createElement('div');
+        actions.className = 'entry-actions';
+        actions.innerHTML = `
+          <button class="btn-entry danger" data-act="delete">delete</button>
+          <button class="btn-entry" data-act="cancel">cancel</button>
+          <button class="btn-entry primary" data-act="save">save</button>
+        `;
+        body.appendChild(actions);
+
+        actions.querySelector('[data-act="save"]').addEventListener('click', () => {
+          const newText = ta.value;
+          const hasShots = (entry.shotIds || []).length > 0;
+          if (!newText.trim() && !hasShots) {
+            // nothing to save — remove the entry
+            ms.journal = ms.journal.filter(e => e.id !== entry.id);
+            uiEntry.editing.delete(entry.id);
+            uiEntry.expanded.delete(entry.id);
+            saveState();
+            renderJournal(ms);
+            return;
+          }
+          entry.text = newText;
+          uiEntry.editing.delete(entry.id);
+          uiEntry.expanded.add(entry.id);
+          saveState();
+          renderJournal(ms);
+          flashSaved();
+        });
+        actions.querySelector('[data-act="cancel"]').addEventListener('click', () => {
+          // If this entry has no text and no shots, treat cancel as abandon and remove it
+          const hasText = (entry.text || '').trim().length > 0;
+          const hasShots = (entry.shotIds || []).length > 0;
+          const currentText = ta.value.trim();
+          if (!hasText && !hasShots && !currentText) {
+            ms.journal = ms.journal.filter(e => e.id !== entry.id);
+            uiEntry.editing.delete(entry.id);
+            uiEntry.expanded.delete(entry.id);
+            saveState();
+            renderJournal(ms);
+            return;
+          }
+          uiEntry.editing.delete(entry.id);
+          renderJournal(ms);
+        });
+        actions.querySelector('[data-act="delete"]').addEventListener('click', async () => {
+          if (!confirm('delete this entry and its screenshots?')) return;
+          for (const sid of (entry.shotIds || [])) {
+            try { await idbDel(sid); } catch(e) {}
+            shotCache.delete(sid);
+          }
+          ms.journal = ms.journal.filter(e => e.id !== entry.id);
+          uiEntry.editing.delete(entry.id);
+          uiEntry.expanded.delete(entry.id);
+          saveState();
+          renderJournal(ms);
+        });
+      } else {
+        const text = document.createElement('div');
+        text.className = 'entry-text';
+        text.textContent = entry.text || '';
+        body.appendChild(text);
+
+        const shotsEl = document.createElement('div');
+        shotsEl.className = 'entry-shots';
+        body.appendChild(shotsEl);
+        renderEntryShots(entry, shotsEl, false);
+
+        const actions = document.createElement('div');
+        actions.className = 'entry-actions';
+        actions.innerHTML = `<button class="btn-entry" data-act="edit">edit</button>`;
+        body.appendChild(actions);
+        actions.querySelector('[data-act="edit"]').addEventListener('click', () => {
+          uiEntry.editing.add(entry.id);
+          uiEntry.expanded.add(entry.id);
+          renderJournal(ms);
+        });
+      }
+
+      card.appendChild(body);
+      list.appendChild(card);
+    });
+  }
+
+  async function renderEntryShots(entry, container, canDelete) {
+    container.innerHTML = '';
+    const ids = entry.shotIds || [];
+    for (const sid of ids) {
       const el = document.createElement('div');
       el.className = 'shot';
-      el.innerHTML = `<img src="${dataUrl}" alt="screenshot"><button class="shot-delete" title="delete">×</button>`;
-      el.querySelector('img').addEventListener('click', () => openLightbox(dataUrl));
-      el.querySelector('.shot-delete').addEventListener('click', e => {
-        e.stopPropagation();
-        ms.shots.splice(idx, 1);
-        saveState();
-        renderShots(ms);
+      const img = document.createElement('img');
+      img.alt = 'screenshot';
+      el.appendChild(img);
+      if (canDelete) {
+        const btn = document.createElement('button');
+        btn.className = 'shot-delete';
+        btn.title = 'delete';
+        btn.textContent = '×';
+        btn.addEventListener('click', async e => {
+          e.stopPropagation();
+          try { await idbDel(sid); } catch (err) {}
+          shotCache.delete(sid);
+          entry.shotIds = entry.shotIds.filter(x => x !== sid);
+          saveState();
+          const ms = getMarketState(state.selected);
+          renderJournal(ms);
+        });
+        el.appendChild(btn);
+      }
+      img.addEventListener('click', async () => {
+        const data = await getShot(sid);
+        if (data) openLightbox(data);
       });
-      c.appendChild(el);
-    });
+      container.appendChild(el);
+      // Async image load
+      getShot(sid).then(data => { if (data) img.src = data; });
+    }
+  }
+
+  async function addShotsToEntry(entry, files) {
+    for (const f of files) {
+      try {
+        const dataUrl = await compressImage(f);
+        const sid = `${state.selected}:${entry.id}:${Date.now()}:${Math.floor(Math.random()*10000)}`;
+        await idbPut(sid, dataUrl);
+        shotCache.set(sid, dataUrl);
+        if (!entry.shotIds) entry.shotIds = [];
+        entry.shotIds.push(sid);
+      } catch (e) {
+        console.error('shot save failed', e);
+      }
+    }
+    saveState();
+    const ms = getMarketState(state.selected);
+    renderJournal(ms);
+    flashSaved();
   }
 
   // Compress an image file to a reasonable size before storing
@@ -1805,79 +2253,6 @@
     });
   }
 
-  async function handleFiles(files) {
-    if (!state.selected) {
-      alert('pick a market first');
-      return;
-    }
-    const ms = getMarketState(state.selected);
-    for (const file of files) {
-      if (!file.type.startsWith('image/')) continue;
-      try {
-        const dataUrl = await compressImage(file);
-        ms.shots.push(dataUrl);
-      } catch (e) {
-        console.error('image processing failed', e);
-      }
-    }
-    saveState();
-    renderShots(ms);
-    flashSaved();
-  }
-
-  // Drag-and-drop on the notes area
-  function setupDragDrop() {
-    const ta = document.getElementById('notes');
-
-    ['dragenter', 'dragover'].forEach(ev => {
-      ta.addEventListener(ev, e => {
-        e.preventDefault();
-        e.stopPropagation();
-        ta.classList.add('drag-over');
-      });
-    });
-    ['dragleave', 'drop'].forEach(ev => {
-      ta.addEventListener(ev, e => {
-        e.preventDefault();
-        e.stopPropagation();
-        ta.classList.remove('drag-over');
-      });
-    });
-    ta.addEventListener('drop', e => {
-      const files = Array.from(e.dataTransfer.files || []);
-      if (files.length) {
-        handleFiles(files);
-        return;
-      }
-      // dragged from a browser tab — try the data
-      const items = e.dataTransfer.items;
-      if (items) {
-        for (const item of items) {
-          if (item.kind === 'file') {
-            const f = item.getAsFile();
-            if (f) handleFiles([f]);
-          }
-        }
-      }
-    });
-
-    // Bonus: paste support
-    ta.addEventListener('paste', e => {
-      const items = e.clipboardData.items;
-      const files = [];
-      for (const item of items) {
-        if (item.type.startsWith('image/')) {
-          const f = item.getAsFile();
-          if (f) files.push(f);
-        }
-      }
-      if (files.length) {
-        e.preventDefault();
-        handleFiles(files);
-      }
-    });
-  }
-
   // ─── LIGHTBOX ───────────────────────────────────────────────
   function openLightbox(src) {
     const lb = document.getElementById('lightbox');
@@ -1891,11 +2266,12 @@
     if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('active');
   });
 
-  // ─── PDF EXPORT ─────────────────────────────────────────────
-  async function exportPdf() {
+  // ─── PDF EXPORT — journal for current market ───────────────
+  async function exportJournal() {
     if (!state.selected) return;
-    const btn = document.getElementById('tp-export');
+    const btn = document.getElementById('journal-export');
     btn.disabled = true;
+    const prevText = btn.textContent;
     btn.textContent = 'building…';
 
     try {
@@ -1903,234 +2279,105 @@
       const doc = new jsPDF({ unit: 'pt', format: 'a4' });
       const W = doc.internal.pageSize.getWidth();
       const H = doc.internal.pageSize.getHeight();
-      const M = 40; // margin
+      const M = 40;
       let y = M;
 
       const mkt = MARKETS.find(m => m.symbol === state.selected);
       const ms = getMarketState(state.selected);
-      const date = getActiveDate();
 
       // Header
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(20);
+      doc.setFontSize(22);
       doc.setTextColor(20, 20, 20);
-      doc.text(`Trade Checklist — ${mkt.symbol}`, M, y);
+      doc.text(`${mkt.symbol} Journal`, M, y);
       y += 22;
 
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
       doc.setTextColor(110, 110, 110);
-      const dateStr = date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-      doc.text(`${mkt.label}  ·  ${dateStr}`, M, y);
+      const exportDate = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      doc.text(`${mkt.label}  ·  exported ${exportDate}  ·  ${ms.journal.length} entr${ms.journal.length === 1 ? 'y' : 'ies'}`, M, y);
       y += 24;
 
-      // Section: The Reading
-      doc.setDrawColor(220);
-      doc.line(M, y, W - M, y); y += 16;
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(11);
-      doc.setTextColor(20, 20, 20);
-      doc.text('THE READING', M, y); y += 14;
-
-      const u_year = universalYear(date.getFullYear());
-      const p_year = personalYear(USER_BIRTH.month, USER_BIRTH.day, date);
-      const u_month = universalMonth(date);
-      const p_month = personalMonth(USER_BIRTH.month, USER_BIRTH.day, date);
-      const u_day = universalDay(date);
-      const p_day = personalDay(USER_BIRTH.month, USER_BIRTH.day, date);
-
-      const fmtPlain = n => {
-        const r = reduceToDigit(n);
-        return n === r ? String(n) : `${n}/${r}`;
-      };
-
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(9);
-      doc.setTextColor(60, 60, 60);
-      const colW = (W - M*2) / 3;
-      const readings = [
-        ['Universal Year', fmtPlain(u_year)],
-        ['Personal Year', fmtPlain(p_year)],
-        ['Universal Month', fmtPlain(u_month)],
-        ['Personal Month', fmtPlain(p_month)],
-        ['Universal Day', fmtPlain(u_day)],
-        ['Personal Day', fmtPlain(p_day)],
-      ];
-      for (let i = 0; i < readings.length; i++) {
-        const col = i % 3;
-        const row = Math.floor(i / 3);
-        const cx = M + col * colW;
-        const cy = y + row * 30;
-        doc.setTextColor(140, 140, 140);
-        doc.setFontSize(7);
-        doc.text(readings[i][0].toUpperCase(), cx, cy);
-        doc.setTextColor(20, 20, 20);
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(14);
-        doc.text(readings[i][1], cx, cy + 14);
-        doc.setFont('helvetica', 'normal');
-      }
-      y += 70;
-
-      // Section: Market stats
-      doc.setDrawColor(220);
-      doc.line(M, y, W - M, y); y += 16;
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(11);
-      doc.setTextColor(20, 20, 20);
-      doc.text(`${mkt.symbol} NUMBERS`, M, y); y += 14;
-
-      const py = personalYear(mkt.birth.month, mkt.birth.day, date);
-      const pmth = personalMonth(mkt.birth.month, mkt.birth.day, date);
-      const pd2 = personalDay(mkt.birth.month, mkt.birth.day, date);
-      const mktReadings = [
-        ['Personal Year', fmtPlain(py)],
-        ['Personal Month', fmtPlain(pmth)],
-        ['Personal Day', fmtPlain(pd2)],
-      ];
-      for (let i = 0; i < mktReadings.length; i++) {
-        const cx = M + i * colW;
-        doc.setTextColor(140, 140, 140);
-        doc.setFontSize(7);
-        doc.text(mktReadings[i][0].toUpperCase(), cx, y);
-        doc.setTextColor(20, 20, 20);
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(14);
-        doc.text(mktReadings[i][1], cx, y + 14);
-        doc.setFont('helvetica', 'normal');
-      }
-      y += 36;
-
-      // Section: Trends
-      doc.setDrawColor(220);
-      doc.line(M, y, W - M, y); y += 16;
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(11);
-      doc.setTextColor(20, 20, 20);
-      doc.text('TRENDS', M, y); y += 14;
-
-      const trendLabel = d => d ? d.toUpperCase() : '—';
-      const trends = [
-        ['Daily', trendLabel(ms.daily)],
-        ['4-Hour', trendLabel(ms.h4)],
-        ['1-Hour', trendLabel(ms.h1)],
-      ];
-      for (let i = 0; i < trends.length; i++) {
-        const cx = M + i * colW;
-        doc.setTextColor(140, 140, 140);
-        doc.setFontSize(7);
-        doc.text(trends[i][0].toUpperCase(), cx, y);
-        if (trends[i][1] === 'UP') doc.setTextColor(40, 140, 70);
-        else if (trends[i][1] === 'DOWN') doc.setTextColor(180, 40, 40);
-        else doc.setTextColor(110, 110, 110);
-        doc.setFont('helvetica', 'bold');
+      if (ms.journal.length === 0) {
         doc.setFontSize(12);
-        doc.text(trends[i][1], cx, y + 14);
-        doc.setFont('helvetica', 'normal');
-      }
-      y += 36;
-
-      // Section: Rules
-      doc.setDrawColor(220);
-      doc.line(M, y, W - M, y); y += 16;
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(11);
-      doc.setTextColor(20, 20, 20);
-      doc.text('RULES', M, y); y += 14;
-
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(9);
-      state.rules.forEach(rule => {
-        const result = evalRule(rule, ms);
-        let mark = '○';
-        if (result.status === 'pass') mark = '✓';
-        else if (result.status === 'fail') mark = '✕';
-        else if (result.status === 'warn') mark = '!';
-        else if (result.manual) mark = state.manualChecks[rule.id] ? '✓' : '○';
-
-        if (result.status === 'pass') doc.setTextColor(40, 140, 70);
-        else if (result.status === 'fail') doc.setTextColor(180, 40, 40);
-        else if (result.status === 'warn') doc.setTextColor(190, 140, 40);
-        else doc.setTextColor(110, 110, 110);
-        doc.text(mark, M, y);
-
-        doc.setTextColor(20, 20, 20);
-        doc.text(rule.text, M + 16, y);
-
         doc.setTextColor(140, 140, 140);
-        doc.setFontSize(8);
-        doc.text(result.label, M + 16, y + 11);
-        doc.setFontSize(9);
-        y += 24;
+        doc.text('(no entries yet)', M, y);
+      } else {
+        // Sort oldest first for PDF chronological reading
+        const sorted = ms.journal.slice().sort((a, b) => a.created - b.created);
 
-        if (y > H - 120) { doc.addPage(); y = M; }
-      });
-      y += 6;
+        for (const entry of sorted) {
+          // Separator
+          doc.setDrawColor(220);
+          doc.line(M, y, W - M, y); y += 16;
 
-      // Section: Notes
-      if (y > H - 120) { doc.addPage(); y = M; }
-      doc.setDrawColor(220);
-      doc.line(M, y, W - M, y); y += 16;
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(11);
-      doc.setTextColor(20, 20, 20);
-      doc.text('NOTES', M, y); y += 14;
+          // Timestamp
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(11);
+          doc.setTextColor(20, 77, 82);
+          doc.text(formatEntryDate(entry.created).toUpperCase(), M, y);
+          y += 18;
 
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(10);
-      doc.setTextColor(40, 40, 40);
-      const noteText = ms.notes || '(no notes)';
-      const lines = doc.splitTextToSize(noteText, W - M*2);
-      for (const line of lines) {
-        if (y > H - 60) { doc.addPage(); y = M; }
-        doc.text(line, M, y);
-        y += 13;
-      }
-      y += 10;
-
-      // Section: Screenshots
-      if (ms.shots.length > 0) {
-        if (y > H - 200) { doc.addPage(); y = M; }
-        doc.setDrawColor(220);
-        doc.line(M, y, W - M, y); y += 16;
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(11);
-        doc.setTextColor(20, 20, 20);
-        doc.text('SCREENSHOTS', M, y); y += 14;
-
-        for (const shot of ms.shots) {
-          // Get image dimensions from data URL via Image()
-          const dims = await new Promise(res => {
-            const im = new Image();
-            im.onload = () => res({ w: im.width, h: im.height });
-            im.src = shot;
-          });
-          const maxW = W - M*2;
-          let drawW = maxW;
-          let drawH = (dims.h / dims.w) * drawW;
-          if (drawH > H - M*2) {
-            drawH = H - M*2;
-            drawW = (dims.w / dims.h) * drawH;
+          // Text
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(10);
+          doc.setTextColor(40, 40, 40);
+          if (entry.text && entry.text.trim()) {
+            const lines = doc.splitTextToSize(entry.text, W - M*2);
+            for (const line of lines) {
+              if (y > H - 60) { doc.addPage(); y = M; }
+              doc.text(line, M, y);
+              y += 13;
+            }
+          } else {
+            doc.setTextColor(160, 160, 160);
+            doc.text('(no text)', M, y);
+            y += 13;
           }
-          if (y + drawH > H - M) { doc.addPage(); y = M; }
-          try {
-            doc.addImage(shot, 'JPEG', M, y, drawW, drawH);
-          } catch (e) {
-            doc.addImage(shot, 'PNG', M, y, drawW, drawH);
+          y += 8;
+
+          // Screenshots
+          const shotIds = entry.shotIds || [];
+          for (const sid of shotIds) {
+            const shot = await getShot(sid);
+            if (!shot) continue;
+            const dims = await new Promise(res => {
+              const im = new Image();
+              im.onload = () => res({ w: im.width, h: im.height });
+              im.onerror = () => res({ w: 1, h: 1 });
+              im.src = shot;
+            });
+            const maxW = W - M*2;
+            let drawW = maxW;
+            let drawH = (dims.h / dims.w) * drawW;
+            if (drawH > H - M*2) {
+              drawH = H - M*2;
+              drawW = (dims.w / dims.h) * drawH;
+            }
+            if (y + drawH > H - M) { doc.addPage(); y = M; }
+            try {
+              doc.addImage(shot, 'JPEG', M, y, drawW, drawH);
+            } catch (e) {
+              try { doc.addImage(shot, 'PNG', M, y, drawW, drawH); } catch(e2) {}
+            }
+            y += drawH + 12;
           }
-          y += drawH + 14;
+
+          y += 10;
+          if (y > H - 80) { doc.addPage(); y = M; }
         }
       }
 
       const today = new Date();
-      const fname = `${mkt.symbol}_${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}.pdf`;
+      const fname = `${mkt.symbol}_journal_${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}.pdf`;
       doc.save(fname);
     } catch (e) {
       console.error(e);
       alert('pdf export failed: ' + e.message);
     } finally {
       btn.disabled = false;
-      btn.textContent = 'export pdf';
+      btn.textContent = prevText;
     }
   }
 
@@ -2164,32 +2411,57 @@
   });
 
   let notesTimer;
-  document.getElementById('notes').addEventListener('input', e => {
-    if (!state.selected) return;
-    const ms = getMarketState(state.selected);
-    ms.notes = e.target.value;
-    clearTimeout(notesTimer);
-    const c = document.getElementById('save-confirm');
-    c.textContent = 'saving…';
-    c.classList.remove('saved');
-    notesTimer = setTimeout(() => { saveState(); flashSaved(); }, 400);
-  });
 
   function flashSaved() {
     const c = document.getElementById('save-confirm');
     c.textContent = 'saved ✓';
     c.classList.add('saved');
+    clearTimeout(notesTimer);
+    notesTimer = setTimeout(() => {
+      c.textContent = '';
+      c.classList.remove('saved');
+    }, 1500);
   }
 
-  document.getElementById('btn-clear').addEventListener('click', () => {
+  document.getElementById('btn-clear').addEventListener('click', async () => {
     if (!state.selected) return;
-    if (!confirm('clear all settings for ' + state.selected + '? this includes notes and screenshots.')) return;
-    state.markets[state.selected] = { daily: null, h4: null, h1: null, notes: '', shots: [] };
+    if (!confirm('clear all settings for ' + state.selected + '? this deletes all journal entries and screenshots for this market.')) return;
+    const ms = getMarketState(state.selected);
+    // Wipe shots from IDB
+    for (const entry of ms.journal) {
+      for (const sid of (entry.shotIds || [])) {
+        try { await idbDel(sid); } catch (e) {}
+        shotCache.delete(sid);
+      }
+    }
+    state.markets[state.selected] = { daily: null, h4: null, h1: null, journal: [] };
     saveState();
     renderTradePanel();
   });
 
-  document.getElementById('tp-export').addEventListener('click', exportPdf);
+  // Journal buttons
+  document.getElementById('journal-new').addEventListener('click', () => {
+    if (!state.selected) return;
+    const ms = getMarketState(state.selected);
+    const entry = {
+      id: 'e' + Date.now() + Math.floor(Math.random()*1000),
+      created: Date.now(),
+      text: '',
+      shotIds: [],
+    };
+    ms.journal.unshift(entry);
+    uiEntry.editing.add(entry.id);
+    uiEntry.expanded.add(entry.id);
+    // Don't save yet — save on "save" click so abandoned empty entries don't persist
+    renderJournal(ms);
+    // focus the newly created textarea
+    setTimeout(() => {
+      const ta = document.querySelector('.entry.editing .entry-textarea');
+      if (ta) ta.focus();
+    }, 20);
+  });
+
+  document.getElementById('journal-export').addEventListener('click', exportJournal);
 
   const dateInput = document.getElementById('date-input');
   function formatDateInput(date) {
@@ -2218,7 +2490,6 @@
 
   // ─── INIT ───────────────────────────────────────────────────
   function renderAll() { renderReading(); renderMarkets(); renderRules(); renderTradePanel(); renderVerdict(); }
-  setupDragDrop();
   initDateInput();
   renderAll();
 </script>
