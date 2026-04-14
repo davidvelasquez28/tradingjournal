@@ -4,26 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Trade Checklist</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23ebe3d2'/%3E%3Cpolyline points='5,24 11,18 15,21 20,12 26,7' fill='none' stroke='%236b8a2a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpolyline points='22,7 26,7 26,11' fill='none' stroke='%236b8a2a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23efe7d2'/%3E%3Cpolyline points='5,24 11,18 15,21 20,12 26,7' fill='none' stroke='%230a4d52' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpolyline points='22,7 26,7 26,11' fill='none' stroke='%230a4d52' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,wght@0,300;0,700;1,300&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #ebe3d2;
-    --surface: #f1ebdc;
-    --surface2: #e2d9c2;
-    --border: #c8bea3;
-    --accent: #6b8a2a;
-    --accent2: #2d6b4f;
-    --text: #2a2620;
-    --muted: #7a7060;
-    --red: #b8412e;
-    --up: #2d6b4f;
-    --down: #b8412e;
-    --flat: #7a7060;
-    --warn: #b8782e;
+    --bg: #efe7d2;
+    --surface: #f5eedc;
+    --surface2: #e4dcc4;
+    --border: #d4cab0;
+    --accent: #0a4d52;
+    --accent2: #d4a12a;
+    --text: #1e2d30;
+    --muted: #6b7a7c;
+    --red: #a83232;
+    --up: #0a4d52;
+    --down: #a83232;
+    --flat: #6b7a7c;
+    --warn: #d4a12a;
   }
 
   body {
@@ -38,8 +38,8 @@
     position: fixed;
     inset: 0;
     background-image:
-      linear-gradient(rgba(107,138,42,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(107,138,42,0.04) 1px, transparent 1px);
+      linear-gradient(rgba(10,77,82,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(10,77,82,0.04) 1px, transparent 1px);
     background-size: 40px 40px;
     pointer-events: none;
     z-index: 0;
@@ -86,7 +86,7 @@
     padding: 7px 10px;
     border-radius: 6px;
     outline: none;
-    color-scheme: dark;
+    color-scheme: light;
   }
   .date-ctrl input:focus { border-color: var(--accent); }
   .date-ctrl button {
@@ -209,8 +209,8 @@
     z-index: 1;
   }
   .stat.serpent {
-    background: linear-gradient(135deg, var(--surface) 0%, #1a1e15 100%);
-    border-color: rgba(212, 242, 100, 0.3);
+    background: linear-gradient(135deg, var(--surface) 0%, #e4dcc4 100%);
+    border-color: rgba(10, 77, 82, 0.4);
   }
   .stat.serpent .stat-label { color: var(--accent); }
   .snake-svg {
@@ -220,7 +220,7 @@
     width: 120px;
     height: 120px;
     color: var(--accent);
-    opacity: 0.18;
+    opacity: 0.28;
     pointer-events: none;
   }
 
@@ -325,18 +325,18 @@
     transition: background 0.3s;
   }
   .verdict.go {
-    background: linear-gradient(135deg, var(--surface) 0%, rgba(45,107,79,0.1) 100%);
-    border-color: rgba(45,107,79,0.4);
+    background: linear-gradient(135deg, var(--surface) 0%, rgba(10,77,82,0.1) 100%);
+    border-color: rgba(10,77,82,0.4);
   }
   .verdict.go::before { background: var(--up); }
   .verdict.caution {
-    background: linear-gradient(135deg, var(--surface) 0%, rgba(184,120,46,0.1) 100%);
-    border-color: rgba(184,120,46,0.4);
+    background: linear-gradient(135deg, var(--surface) 0%, rgba(212,161,42,0.1) 100%);
+    border-color: rgba(212,161,42,0.4);
   }
   .verdict.caution::before { background: var(--warn); }
   .verdict.stop {
-    background: linear-gradient(135deg, var(--surface) 0%, rgba(184,65,46,0.1) 100%);
-    border-color: rgba(184,65,46,0.5);
+    background: linear-gradient(135deg, var(--surface) 0%, rgba(168,50,50,0.1) 100%);
+    border-color: rgba(168,50,50,0.5);
   }
   .verdict.stop::before { background: var(--down); }
 
@@ -463,9 +463,9 @@
   .rule-card.hard::before { background: var(--down); }
   .rule-card.soft::before { background: var(--warn); }
 
-  .rule-card.pass { border-color: rgba(45,107,79,0.4); }
-  .rule-card.fail { border-color: rgba(184,65,46,0.5); background: linear-gradient(135deg, var(--surface) 0%, rgba(184,65,46,0.05) 100%); }
-  .rule-card.warn { border-color: rgba(184,120,46,0.4); }
+  .rule-card.pass { border-color: rgba(10,77,82,0.4); }
+  .rule-card.fail { border-color: rgba(168,50,50,0.5); background: linear-gradient(135deg, var(--surface) 0%, rgba(168,50,50,0.05) 100%); }
+  .rule-card.warn { border-color: rgba(212,161,42,0.4); }
 
   .rule-status {
     width: 36px;
@@ -481,12 +481,12 @@
     background: var(--surface2);
     color: var(--muted);
   }
-  .rule-status.pass { background: rgba(45,107,79,0.15); border-color: var(--up); color: var(--up); }
-  .rule-status.fail { background: rgba(184,65,46,0.15); border-color: var(--down); color: var(--down); }
-  .rule-status.warn { background: rgba(184,120,46,0.15); border-color: var(--warn); color: var(--warn); }
+  .rule-status.pass { background: rgba(10,77,82,0.15); border-color: var(--up); color: var(--up); }
+  .rule-status.fail { background: rgba(168,50,50,0.15); border-color: var(--down); color: var(--down); }
+  .rule-status.warn { background: rgba(212,161,42,0.15); border-color: var(--warn); color: var(--warn); }
   .rule-status.manual { cursor: pointer; transition: all 0.15s; }
   .rule-status.manual:hover { border-color: var(--accent); color: var(--accent); }
-  .rule-status.manual.checked { background: rgba(45,107,79,0.15); border-color: var(--up); color: var(--up); }
+  .rule-status.manual.checked { background: rgba(10,77,82,0.15); border-color: var(--up); color: var(--up); }
 
   .rule-body { flex: 1; min-width: 0; }
 
@@ -506,7 +506,7 @@
     -webkit-user-drag: none;
   }
   .rule-text:hover { background: rgba(0,0,0,0.025); }
-  .rule-text:focus { background: rgba(107,138,42,0.08); }
+  .rule-text:focus { background: rgba(10,77,82,0.08); }
   .rule-text:empty::before {
     content: 'type your rule…';
     color: var(--muted);
@@ -548,13 +548,13 @@
   }
   .rule-severity.hard {
     color: var(--down);
-    border-color: rgba(255,92,92,0.5);
-    background: rgba(255,92,92,0.1);
+    border-color: rgba(168,50,50,0.5);
+    background: rgba(168,50,50,0.1);
   }
   .rule-severity.soft {
     color: var(--warn);
-    border-color: rgba(242,199,106,0.5);
-    background: rgba(242,199,106,0.1);
+    border-color: rgba(212,161,42,0.5);
+    background: rgba(212,161,42,0.1);
   }
   .rule-severity:hover { opacity: 0.8; }
 
@@ -596,12 +596,12 @@
   .rule-add:hover {
     border-color: var(--accent);
     color: var(--accent);
-    background: rgba(212,242,100,0.03);
+    background: rgba(10,77,82,0.05);
   }
 
   .btn-primary {
     background: var(--accent);
-    color: #0e0e10;
+    color: #fff;
     border: none;
     font-family: 'DM Mono', monospace;
     font-size: 0.72rem;
@@ -692,7 +692,7 @@
   }
   .tp-badge {
     background: var(--accent);
-    color: #0e0e10;
+    color: #fff;
     font-size: 0.62rem;
     font-weight: 500;
     letter-spacing: 0.08em;
@@ -721,7 +721,7 @@
     transition: all 0.15s;
     text-transform: uppercase;
   }
-  .tp-export:hover { background: var(--accent); color: #0e0e10; }
+  .tp-export:hover { background: var(--accent); color: #fff; }
   .tp-export:disabled { opacity: 0.5; cursor: wait; }
 
   .tp-stats {
@@ -828,8 +828,8 @@
   .tf-btn.up .arrow { color: var(--up); }
   .tf-btn.down .arrow { color: var(--down); }
   .tf-btn.flat .arrow { color: var(--flat); }
-  .tf-btn.active.up { background: rgba(106,242,176,0.12); border-color: var(--up); color: var(--text); }
-  .tf-btn.active.down { background: rgba(255,92,92,0.12); border-color: var(--down); color: var(--text); }
+  .tf-btn.active.up { background: rgba(10,77,82,0.14); border-color: var(--up); color: var(--text); }
+  .tf-btn.active.down { background: rgba(168,50,50,0.14); border-color: var(--down); color: var(--text); }
   .tf-btn.active.flat { background: var(--surface); border-color: var(--muted); color: var(--text); }
 
   .notes-section { padding: 22px; }
@@ -859,7 +859,7 @@
   .notes-area:focus { border-color: var(--accent2); }
   .notes-area.drag-over {
     border-color: var(--accent);
-    background: rgba(212,242,100,0.04);
+    background: rgba(10,77,82,0.06);
   }
 
   .screenshots {
@@ -1207,6 +1207,7 @@
   // ─── CONFIG ─────────────────────────────────────────────────
   const USER_BIRTH = { month: 9, day: 7 };
   const MARKETS = [
+    { symbol: 'US30',   label: 'dow jones',   birth: { month: 10, day: 1,  year: 1928 } },
     { symbol: 'XAUUSD', label: 'gold / usd',  birth: { month: 8,  day: 15, year: 1971 } },
     { symbol: 'BTC',    label: 'bitcoin',     birth: { month: 1,  day: 3,  year: 2009 } },
     { symbol: 'VVV',    label: 'venice ai',   birth: { month: 1,  day: 27, year: 2025 } },
@@ -1424,7 +1425,6 @@
       else if (result.status === 'fail') cls += ' fail';
       else if (result.status === 'warn') cls += ' warn';
       card.className = cls;
-      card.draggable = true;
       card.dataset.ruleId = rule.id;
 
       let icon = '○';
@@ -1438,7 +1438,7 @@
         : result.status;
 
       card.innerHTML = `
-        <div class="rule-drag" title="drag to reorder"><span></span><span></span><span></span></div>
+        <div class="rule-drag" draggable="true" title="drag to reorder" data-drag="${rule.id}"><span></span><span></span><span></span></div>
         <div class="rule-status ${statusCls}" data-rule="${rule.id}">${icon}</div>
         <div class="rule-body">
           <div class="rule-text" contenteditable="true" spellcheck="false" data-rule="${rule.id}">${escapeHtml(rule.text)}</div>
@@ -1478,7 +1478,7 @@
     });
     grid.appendChild(addCard);
 
-    // Wire up inline editing
+    // Wire up inline editing — saves silently without re-rendering so the cursor stays put
     grid.querySelectorAll('.rule-text[contenteditable]').forEach(el => {
       el.addEventListener('blur', () => {
         const id = el.dataset.rule;
@@ -1486,15 +1486,19 @@
         if (!rule) return;
         const newText = el.textContent.trim();
         if (!newText) {
-          // empty → delete
+          // empty → delete the rule and rerender (needed to remove the card)
           state.rules = state.rules.filter(r => r.id !== id);
           delete state.manualChecks[id];
-        } else if (newText !== rule.text) {
-          rule.text = newText;
+          saveState();
+          renderRules();
+          renderVerdict();
+          return;
         }
-        saveState();
-        renderRules();
-        renderVerdict();
+        if (newText !== rule.text) {
+          rule.text = newText;
+          saveState();
+          // No rerender needed — the DOM already shows the new text.
+        }
       });
       el.addEventListener('keydown', e => {
         if (e.key === 'Enter') {
@@ -1510,18 +1514,31 @@
       });
     });
 
-    // Manual checks
+    // Manual checks — update the one card in place, don't rerender the whole list
     grid.querySelectorAll('.rule-status.manual').forEach(el => {
       el.addEventListener('click', () => {
         const id = el.dataset.rule;
+        const rule = state.rules.find(r => r.id === id);
+        if (!rule) return;
         state.manualChecks[id] = !state.manualChecks[id];
         saveState();
-        renderRules();
+        // Update just this card visually
+        const checked = state.manualChecks[id];
+        const card = el.closest('.rule-card');
+        if (checked) {
+          el.classList.add('checked');
+          el.textContent = '✓';
+          card.classList.add('pass');
+        } else {
+          el.classList.remove('checked');
+          el.textContent = '○';
+          card.classList.remove('pass');
+        }
         renderVerdict();
       });
     });
 
-    // Severity toggle
+    // Severity toggle — update in place
     grid.querySelectorAll('.rule-severity').forEach(el => {
       el.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -1530,7 +1547,13 @@
         if (!rule) return;
         rule.severity = rule.severity === 'hard' ? 'soft' : 'hard';
         saveState();
-        renderRules();
+        // Update this card's severity class and the pill in place
+        const card = el.closest('.rule-card');
+        card.classList.remove('hard', 'soft');
+        card.classList.add(rule.severity);
+        el.classList.remove('hard', 'soft');
+        el.classList.add(rule.severity);
+        el.textContent = rule.severity;
         renderVerdict();
       });
     });
@@ -1549,26 +1572,24 @@
       });
     });
 
-    // Drag & drop reordering
+    // Drag & drop — handle is draggable, not the whole card
     let dragSrcId = null;
-    grid.querySelectorAll('.rule-card').forEach(card => {
-      card.addEventListener('dragstart', (e) => {
-        // Don't initiate drag if user is editing text
-        if (document.activeElement && document.activeElement.classList.contains('rule-text')) {
-          e.preventDefault();
-          return;
-        }
-        dragSrcId = card.dataset.ruleId;
+    grid.querySelectorAll('.rule-drag').forEach(handle => {
+      handle.addEventListener('dragstart', (e) => {
+        dragSrcId = handle.dataset.drag;
+        const card = handle.closest('.rule-card');
         card.classList.add('dragging');
         e.dataTransfer.effectAllowed = 'move';
         try { e.dataTransfer.setData('text/plain', dragSrcId); } catch (err) {}
       });
-      card.addEventListener('dragend', () => {
+      handle.addEventListener('dragend', () => {
         dragSrcId = null;
         grid.querySelectorAll('.rule-card').forEach(c => {
           c.classList.remove('dragging', 'drag-over');
         });
       });
+    });
+    grid.querySelectorAll('.rule-card').forEach(card => {
       card.addEventListener('dragenter', (e) => {
         e.preventDefault();
         if (card.dataset.ruleId !== dragSrcId) card.classList.add('drag-over');
@@ -2200,9 +2221,6 @@
   setupDragDrop();
   initDateInput();
   renderAll();
-
-  // Refresh time-based rules every 30s
-  setInterval(() => { renderRules(); renderVerdict(); }, 30000);
 </script>
 </body>
 </html>
