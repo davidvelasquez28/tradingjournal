@@ -910,9 +910,10 @@
   }
   .entry-preview {
     flex: 1;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.75rem;
+    font-family: 'Instrument Serif', serif;
+    font-size: 1rem;
     color: var(--muted);
+    font-style: italic;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -944,13 +945,14 @@
   .entry.expanded .entry-body { display: block; }
 
   .entry-text {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.82rem;
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.25rem;
     color: var(--text);
-    line-height: 1.65;
+    line-height: 1.55;
     white-space: pre-wrap;
     word-wrap: break-word;
-    padding: 14px 0;
+    padding: 16px 0;
+    letter-spacing: 0.005em;
   }
   .entry-text:empty::before {
     content: '(no text)';
@@ -960,19 +962,20 @@
 
   .entry-textarea {
     width: 100%;
-    min-height: 120px;
+    min-height: 160px;
     background: var(--surface);
     border: 1px solid var(--border);
     color: var(--text);
-    font-family: 'DM Mono', monospace;
-    font-size: 0.82rem;
-    line-height: 1.65;
-    padding: 14px 16px;
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.25rem;
+    line-height: 1.55;
+    padding: 16px 18px;
     border-radius: 6px;
     resize: vertical;
     outline: none;
     margin-top: 14px;
     transition: border-color 0.2s;
+    letter-spacing: 0.005em;
   }
   .entry-textarea::placeholder { color: var(--muted); }
   .entry-textarea:focus { border-color: var(--accent); }
