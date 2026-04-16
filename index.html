@@ -1206,7 +1206,7 @@
           <div class="stat-label">Personal Day</div>
           <div>
             <div class="stat-value" id="p-day">—</div>
-            <div class="stat-sub">p.month + day of year</div>
+            <div class="stat-sub">p.year + universal day</div>
           </div>
         </div>
       </div>
@@ -1353,9 +1353,13 @@
     return Math.floor(diff / 86400000) + 1;
   }
 
-  // Personal day: personal month (compound, not reduced) + day-of-year
+  // Personal day: personal year (reduced) + universal day (reduced).
+  // Example: 3/1/2026 → universal day = 3+1+2+0+2+6 = 14 → 5.
+  // If personal year reduces to 11, personal day = 11 + 5 = 16.
   function personalDay(bm, bd, date) {
-    return personalMonth(bm, bd, date) + dayOfYear(date);
+    const py = reduceToDigit(personalYear(bm, bd, date));
+    const ud = reduceToDigit(universalDay(date));
+    return py + ud;
   }
 
   // ─── CONFIG ─────────────────────────────────────────────────
